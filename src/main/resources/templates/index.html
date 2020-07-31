@@ -17,22 +17,22 @@
 <body>
 	<!-- navigation header: start -->
 	<div class="navbar-fixed">
-		<div th:replace="/header :: header"></div>
+		<div th:replace="header :: header"></div>
 	</div>
 	<!-- navigation header: end -->
 	<!-- mobile navigation: start -->
-	<div th:replace="/sidenav :: sidenav"></div>
+	<div th:replace="sidenav :: sidenav"></div>
 	<!-- mobile navigation: end -->
 	<!-- content container: start -->
 	<div id="content-container" class="container">
 		<!-- registration-form container: start -->
 		<div id="registration-form-container" class="row center">
-			<div th:replace="/register :: register"></div>
+			<div th:replace="register :: register"></div>
 		</div>
 		<!-- registration-form container: end -->
 		<!-- login-form container: start -->
 		<div id="login-form-container" class="row center hidden">
-			<div th:replace="/login :: login"></div>
+			<div th:replace="login :: login"></div>
 		</div>
 		<!-- login-form container: end -->
 	</div>
