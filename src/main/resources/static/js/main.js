@@ -9,3 +9,7 @@ $(document).ready(function() {
 		registerUser();
 	});
 })
+
+function registerUser() {
+	alert($("#first_name").val());
+}
