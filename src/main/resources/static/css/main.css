@@ -14,3 +14,7 @@ body {
 .margin-b1 {
 	margin-bottom: 1px !important;
 }
+
+.hover-effect:hover {
+	background-color: red;
+}

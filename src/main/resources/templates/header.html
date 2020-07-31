@@ -2,12 +2,16 @@
 <div th:fragment="header">
 	<nav class="nav-wrapper teal lighten-2">
 		<div class="container">
-			<a href="#" class="logo-link brand-logo">iCourses</a> <a href="#"
+			<a href="/" class="logo-link brand-logo">iCourses</a> <a href="#"
 				data-target="mobile-demo" class="sidenav-trigger"><i
 				class="material-icons">menu</i></a>
 			<ul class="right hide-on-med-and-down">
 				<li><a class="register-link waves-effect" href="#">Register</a></li>
 				<li><a class="login-link waves-effect" href="#">Login</a></li>
+				<li class="hidden"><a id="username-placeholder" href="#"
+					style="pointer-events: none;">User</a></li>
+				<li class="hidden">><a class="logout-link waves-effect"
+					href="#">Logout</a></li>
 			</ul>
 		</div>
 	</nav>
