@@ -17,118 +17,22 @@
 <body>
 	<!-- navigation header: start -->
 	<div class="navbar-fixed">
-		<nav class="nav-wrapper teal lighten-2">
-			<div class="container">
-				<a href="#" class="home-link brand-logo">iCourses</a> <a href="#"
-					data-target="mobile-demo" class="sidenav-trigger"><i
-					class="material-icons">menu</i></a>
-				<ul class="right hide-on-med-and-down">
-					<li><a class="register-link waves-effect" href="#">Register</li>
-					<li><a class="login-link waves-effect" href="#">Login</a></li>
-				</ul>
-			</div>
-		</nav>
+		<div th:replace="/header :: header"></div>
 	</div>
 	<!-- navigation header: end -->
-	<!-- side navigation: start -->
-	<ul class="sidenav" id="mobile-demo">
-		<li><a class="register-link waves-effect" href="#">Register</a></li>
-		<li><a class="login-link waves-effect" href="#">Login</a></li>
-	</ul>
-	<!-- side navigation: end -->
+	<!-- mobile navigation: start -->
+	<div th:replace="/sidenav :: sidenav"></div>
+	<!-- mobile navigation: end -->
 	<!-- content container: start -->
 	<div id="content-container" class="container">
-	    <!-- registration-form container: start -->
+		<!-- registration-form container: start -->
 		<div id="registration-form-container" class="row center">
-			<h5 class="teal-text">Register</h5>
-			<form id="register-form" class="col s12 m6 offset-m3">
-				<div class="row margin-b1">
-					<div class="input-field col s6">
-						<input placeholder="First Name" id="first_name" type="text"
-							class="validate" required> <label for="first_name">First
-							Name</label> <span class="input-firstname helper-text"
-							data-error="Please enter first name"></span>
-					</div>
-					<div class="input-field col s6">
-						<input id="last_name" type="text" class="validate" required>
-						<label for="last_name">Last Name</label> <span
-							class="input-lastname helper-text"
-							data-error="Please enter last name"></span>
-					</div>
-				</div>
-				<div class="row margin-b1">
-					<div class="input-field col s12">
-						<input id="email" type="email" class="validate" required>
-						<label for="email">Email</label> <span
-							class="input-email helper-text"
-							data-error="Please provide valid email"></span>
-					</div>
-				</div>
-				<div class="row margin-b1">
-					<div class="input-field col s12">
-						<input id="password" type="password" class="validate" required>
-						<label for="password">Password</label> <span
-							class="input-password helper-text"
-							data-error="Please enter password"></span>
-					</div>
-				</div>
-				<div class="row">
-					<div class="input-field col s6">
-						<label> <input class="with-gap" name="category-radio" type="radio" checked />
-							<span>Student</span>
-						</label>
-					</div>
-					<div class="input-field col s6">
-						<label> <input class="with-gap" name="category-radio" type="radio" /> <span>Teacher</span>
-						</label>
-					</div>
-				</div>
-				<div class="row margin-b1">
-					<div class="input-field col s12">
-						<button class="btn waves-effect right" type="submit" name="action">Register
-						</button>
-					</div>
-				</div>
-				<div class="row">
-					<div class="input-field col s12">
-						<a class="login-link teal-text" href="#">Already registered? Login here</a>
-					</div>
-				</div>
-			</form>
+			<div th:replace="/register :: register"></div>
 		</div>
 		<!-- registration-form container: end -->
 		<!-- login-form container: start -->
 		<div id="login-form-container" class="row center hidden">
-			<h5 class="teal-text">Login</h5>
-			<form id="login-form" class="col s12 m6 offset-m3">
-				<div class="row margin-b1">
-					<div class="input-field col s12">
-						<input id="login-email" type="email" class="validate" required>
-						<label for="login-email">Email</label> <span
-							class="input-email helper-text"
-							data-error="Please provide valid email"></span>
-					</div>
-				</div>
-				<div class="row margin-b1">
-					<div class="input-field col s12">
-						<input id="login-password" type="password" class="validate" required>
-						<label for="login-password">Password</label> <span
-							class="input-password helper-text"
-							data-error="Please enter password"></span>
-					</div>
-				</div>
-				<div class="row margin-b1">
-					<div class="input-field col s12">
-						<button class="btn waves-effect right" type="submit" name="action">Login
-						</button>
-					</div>
-				</div>
-				<div class="row">
-					<div class="input-field col s12">
-						<a class="register-link teal-text" href="#">New user? Register here</a>
-					</div>
-				</div>
-			</form>
+			<div th:replace="/login :: login"></div>
 		</div>
 		<!-- login-form container: end -->
 	</div>

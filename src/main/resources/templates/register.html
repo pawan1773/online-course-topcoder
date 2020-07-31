@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="register">
+	<h5 class="teal-text">Register</h5>
+	<form id="register-form" class="col s12 m6 offset-m3">
+		<div class="row margin-b1">
+			<div class="input-field col s6">
+				<input placeholder="First Name" id="first_name" type="text"
+					class="validate" required> <label for="first_name">First
+					Name</label> <span class="input-firstname helper-text"
+					data-error="Please enter first name"></span>
+			</div>
+			<div class="input-field col s6">
+				<input id="last_name" type="text" class="validate" required>
+				<label for="last_name">Last Name</label> <span
+					class="input-lastname helper-text"
+					data-error="Please enter last name"></span>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<input id="email" type="email" class="validate" required> <label
+					for="email">Email</label> <span class="input-email helper-text"
+					data-error="Please provide valid email"></span>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<input id="password" type="password" class="validate" required>
+				<label for="password">Password</label> <span
+					class="input-password helper-text"
+					data-error="Please enter password"></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s6">
+				<label> <input class="with-gap" name="category-radio"
+					type="radio" checked /> <span>Student</span>
+				</label>
+			</div>
+			<div class="input-field col s6">
+				<label> <input class="with-gap" name="category-radio"
+					type="radio" /> <span>Teacher</span>
+				</label>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<button class="btn waves-effect right" type="submit" name="action">Register
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<a class="login-link teal-text" href="#">Already registered?
+					Login here</a>
+			</div>
+		</div>
+	</form>
+</div>
