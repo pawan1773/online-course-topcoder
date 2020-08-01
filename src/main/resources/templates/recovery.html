@@ -4,30 +4,31 @@
 	<form id="recovery-form" class="col s12 m6 offset-m3">
 		<div class="row margin-b1">
 			<div class="input-field col s12">
-				<input id="recovery-email" type="email" class="validate" required>
-				<label for="recovery-email">Email</label> <span class="helper-text"
-					data-error="Please provide valid email"></span>
+				<input id="recovery-email" type="email" class="validate"
+					maxlength="30" required> <label for="recovery-email">Email</label>
+				<span class="helper-text" data-error="Please provide valid email"></span>
 			</div>
 		</div>
 		<div class="row margin-b1">
 			<div class="input-field col s12">
 				<input id="recovery-password" type="password" class="validate"
-					required> <label for="recovery-password">New
+					maxlength="50" required> <label for="recovery-password">New
 					Password</label> <span class="helper-text"
 					data-error="Please enter password"></span>
 			</div>
 		</div>
 		<div class="row margin-b1">
 			<div class="input-field col s12">
-				<input id="recovery-key" type="text" class="validate" required>
-				<label for="recovery-key">Password Recovery Key</label> <span
-					class="helper-text" data-error="Please enter password recovery key"></span>
+				<input id="recovery-key" type="text" class="validate" maxlength="20"
+					required> <label for="recovery-key">Password
+					Recovery Key</label> <span class="helper-text"
+					data-error="Please enter password recovery key"></span>
 			</div>
 		</div>
 		<div class="row margin-b1">
 			<div class="input-field col s12">
-				<button class="btn waves-effect right" type="submit" name="action">Change Password
-				</button>
+				<button class="btn waves-effect right" type="submit" name="action">Change
+					Password</button>
 			</div>
 		</div>
 	</form>

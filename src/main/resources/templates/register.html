@@ -4,34 +4,36 @@
 	<form id="register-form" class="col s12 m6 offset-m3">
 		<div class="row margin-b1">
 			<div class="input-field col s6">
-				<input id="first_name" type="text" class="validate" required>
-				<label for="first_name">First Name</label> <span class="helper-text"
-					data-error="Please enter first name"></span>
+				<input id="first_name" type="text" class="validate" maxlength="20"
+					required> <label for="first_name">First Name</label> <span
+					class="helper-text" data-error="Please enter first name"></span>
 			</div>
 			<div class="input-field col s6">
 				<input id="last_name" type="text" class="validate" required>
 				<label for="last_name">Last Name</label> <span class="helper-text"
-					data-error="Please enter last name"></span>
+					data-error="Please last name"></span>
 			</div>
 		</div>
 		<div class="row margin-b1">
 			<div class="input-field col s12">
-				<input id="email" type="email" class="validate" required> <label
-					for="email">Email</label> <span class="helper-text"
-					data-error="Please provide valid email"></span>
+				<input id="email" type="email" class="validate" maxlength="30"
+					required> <label for="email">Email</label> <span
+					class="helper-text" data-error="Invalid email address"></span>
 			</div>
 		</div>
 		<div class="row margin-b1">
 			<div class="input-field col s6">
-				<input id="password" type="password" class="validate" required>
-				<label for="password">Password</label> <span
+				<input id="password" type="password" class="validate" maxlength="50"
+					pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,50}" required> <label
+					for="password">Password</label> <span
 					class="input-password helper-text"
-					data-error="Please enter password"></span>
+					data-error="Password is too weak"></span>
 			</div>
 			<div class="input-field col s6">
-				<input id="recovery" type="text" class="validate" required>
-				<label for="recovery">Password Recovery Key</label> <span
-					class="helper-text" data-error="Please enter recovery key"></span>
+				<input id="recovery" type="text" class="validate" maxlength="20"
+					pattern=".{3,20}" required> <label for="recovery">Password
+					Recovery Key</label> <span class="helper-text"
+					data-error="Password recovery key is too short"></span>
 			</div>
 		</div>
 		<div class="row">
