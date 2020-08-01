@@ -1,5 +1,12 @@
 package com.topcoder.course.online.model.request;
 
+/**
+ * <p>
+ * This class represents user registration model.
+ * </p>
+ * 
+ * @author joginder.pawan@gmail.com
+ */
 public class RegistrationRequestModel {
 
 	private String firstName;
@@ -9,6 +16,8 @@ public class RegistrationRequestModel {
 	private String email;
 
 	private String password;
+
+	private String recoveryKey;
 
 	private String role;
 
@@ -42,6 +51,14 @@ public class RegistrationRequestModel {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getRecoveryKey() {
+		return recoveryKey;
+	}
+
+	public void setRecoveryKey(String recoveryKey) {
+		this.recoveryKey = recoveryKey;
 	}
 
 	public String getRole() {

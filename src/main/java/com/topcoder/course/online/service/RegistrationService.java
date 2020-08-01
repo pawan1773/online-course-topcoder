@@ -12,7 +12,7 @@ public interface RegistrationService {
 	 * </p>
 	 * 
 	 * @param model
-	 * @return 
+	 * @return {@linkplain Map}
 	 */
 	Map<String, Object> registerUser(final RegistrationRequestModel model);
 }

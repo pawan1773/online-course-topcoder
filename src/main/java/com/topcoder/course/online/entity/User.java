@@ -12,6 +12,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+/**
+ * <p>
+ * This class represents user_details table.
+ * <p>
+ * 
+ * @author joginder.pawan@gmail.com
+ */
 @Entity
 @Table(name = "user_details")
 public class User implements Serializable {
@@ -28,6 +35,9 @@ public class User implements Serializable {
 
 	@Column(name = "last_name", length = 20)
 	private String lastName;
+
+	@Column(name = "recovery_key", length = 20)
+	private String recoveryKey;
 
 	@Column(name = "email", unique = true, length = 30)
 	private String email;
@@ -61,6 +71,14 @@ public class User implements Serializable {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getRecoveryKey() {
+		return recoveryKey;
+	}
+
+	public void setRecoveryKey(String recoveryKey) {
+		this.recoveryKey = recoveryKey;
 	}
 
 	public String getEmail() {
