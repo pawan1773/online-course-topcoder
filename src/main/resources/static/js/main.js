@@ -38,23 +38,32 @@ function registerUser() {
 		"email" : email,
 		"password" : password,
 		"role" : role
-	}	
+	}
 
 	$.ajax({
-		type : "POST",
-		contentType : "application/json",
-		url : "/register",
-		data : JSON.stringify(registerRequestModel),
-		dataType : 'json',
-		cache : false,
-		timeout : 600000,
-		success : function(data) {
-			$('#register-form').trigger("reset");
-			$('#login-form-container').show();
-			$('#registration-form-container').hide();
-		},
-		error : function(e) {
-			console.log("ERROR : ", e);
-		}
-	});
+			type : "POST",
+			contentType : "application/json",
+			url : "/register",
+			data : JSON.stringify(registerRequestModel),
+			dataType : 'json',
+			cache : false,
+			timeout : 600000,
+			success : function(data) {
+				$('#register-form').trigger("reset");
+				$('#login-form-container').show();
+				$('#registration-form-container').hide();
+				var toastHTML = '<span>' + data.success + '</span><button class="white-text btn-flat toast-action">Close</button>';
+				M.toast({
+					html : toastHTML,
+					classes: 'teal lighten-1'
+				});
+			},
+			error : function(textStatus, errorThrown) {
+				var toastHTML = '<span>' + textStatus.responseJSON.error + '</span><button class="white-text btn-flat toast-action">Close</button>';
+				M.toast({
+					html : toastHTML,
+					classes: 'red lighten-1'
+				});
+			}
+		});
 }

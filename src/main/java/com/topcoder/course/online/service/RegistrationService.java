@@ -1,5 +1,7 @@
 package com.topcoder.course.online.service;
 
+import java.util.Map;
+
 import com.topcoder.course.online.model.request.RegistrationRequestModel;
 
 public interface RegistrationService {
@@ -10,6 +12,7 @@ public interface RegistrationService {
 	 * </p>
 	 * 
 	 * @param model
+	 * @return 
 	 */
-	void registerUser(final RegistrationRequestModel model);
+	Map<String, Object> registerUser(final RegistrationRequestModel model);
 }
