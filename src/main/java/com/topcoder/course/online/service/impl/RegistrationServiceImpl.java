@@ -22,7 +22,7 @@ import com.topcoder.course.online.service.RegistrationService;
  * 
  * @author joginder.pawan@gmail.com
  */
-@Service
+@Service(value = "registrationServiceImpl")
 public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired

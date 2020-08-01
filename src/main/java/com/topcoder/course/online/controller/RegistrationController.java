@@ -3,6 +3,7 @@ package com.topcoder.course.online.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,8 @@ import com.topcoder.course.online.service.RegistrationService;
 public class RegistrationController {
 
 	@Autowired
-	private RegistrationService registrationServiceImpl;
+	@Qualifier(value = "registrationServiceImpl")
+	private RegistrationService registrationService;
 
 	/**
 	 * <p>
@@ -35,7 +37,7 @@ public class RegistrationController {
 	 */
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> registerUser(@RequestBody final RegistrationRequestModel model) {
-		final Map<String, Object> body = this.registrationServiceImpl.registerUser(model);
+		final Map<String, Object> body = this.registrationService.registerUser(model);
 
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
