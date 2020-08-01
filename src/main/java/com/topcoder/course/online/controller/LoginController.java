@@ -1,13 +1,16 @@
 package com.topcoder.course.online.controller;
 
-import org.springframework.stereotype.Controller;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class LoginController {
-
-	@GetMapping("/")
-	public String index() {
-		return "index";
+	
+	@GetMapping("/login")
+	public ResponseEntity<?> login(final HttpSession session) {
+		return null;
 	}
 }

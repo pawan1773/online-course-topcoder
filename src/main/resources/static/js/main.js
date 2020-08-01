@@ -24,6 +24,37 @@ $(document).ready(function() {
 	});
 })
 
+/* to register user */
 function registerUser() {
-	alert($("#first_name").val());
+	var firstName = $("#first_name").val();
+	var lastName = $("#last_name").val();
+	var email = $("#email").val();
+	var password = $("#password").val();
+	var role = $("input[name='role-radio']:checked").val();
+
+	var registerRequestModel = {
+		"firstName" : firstName,
+		"lastName" : lastName,
+		"email" : email,
+		"password" : password,
+		"role" : role
+	}	
+
+	$.ajax({
+		type : "POST",
+		contentType : "application/json",
+		url : "/register",
+		data : JSON.stringify(registerRequestModel),
+		dataType : 'json',
+		cache : false,
+		timeout : 600000,
+		success : function(data) {
+			$('#register-form').trigger("reset");
+			$('#login-form-container').show();
+			$('#registration-form-container').hide();
+		},
+		error : function(e) {
+			console.log("ERROR : ", e);
+		}
+	});
 }

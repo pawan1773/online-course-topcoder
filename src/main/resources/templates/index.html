@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>iCourse</title>
@@ -35,6 +36,11 @@
 			<div th:replace="login :: login"></div>
 		</div>
 		<!-- login-form container: end -->
+		<!-- courses container: start -->
+		<div id="courses-container" class="row hidden">
+			<div th:replace="courses :: courses"></div>
+		</div>
+		<!-- courses container: end -->
 	</div>
 	<!-- content container container: start -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-174166651-1"></script>
