@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ import com.topcoder.course.online.service.RegistrationService;
  * 
  * @author joginder.pawan@gmail.com
  */
-@Service(value = "registrationServiceImpl")
+@Service
+@Qualifier(value = "registrationServiceImpl")
 public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
