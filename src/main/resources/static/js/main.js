@@ -49,8 +49,7 @@ function registerUser() {
 		"role" : role
 	}
 
-	$
-			.ajax({
+	$.ajax({
 				type : "POST",
 				contentType : "application/json",
 				url : "/register",
