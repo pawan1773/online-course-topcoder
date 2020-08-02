@@ -1,10 +1,10 @@
 /* wait for document to get ready */
 $(document).ready(function() {
 	/* to prevent login if user is stored in session */
-	if (sessionStorage.getItem('user')) {
+	if (sessionStorage.getItem('firstName')) {
 		$('.without-session').hide();
 		$('.username-placeholder').text(
-				'Hello, ' + sessionStorage.getItem('user'));
+				'Hello, ' + sessionStorage.getItem('firstName'));
 		$('.with-session').show();		
 		
 		$('#courses-container').show();		
@@ -25,7 +25,7 @@ $(document).ready(function() {
 	
 	/* to clear session storage on logout */
 	$('.logout-link').click(function() {
-		sessionStorage.removeItem('user');
+		sessionStorage.clear();
 		$('.without-session').show();
 		$('.with-session').hide();
 		$('#registration-form-container').show().siblings().hide();
@@ -77,9 +77,11 @@ $(document).ready(function() {
 					return obj.courseCategory === courseCategory;
 				});
 		var pdfListHtml = '';
+		var previewFileConfig = '';
 		for (var i = 0; i < pdfs.length; i++) {
 			if (pdfs[i].courseCategory === courseCategory) {
 				if(i === 0) {
+					previewFileConfig = pdfs[i];
 					pdfListHtml = pdfListHtml + '<li class="collection-item active" data-file-name="' + pdfs[i].fileName +'"><a href="#" class="white-text">' + pdfs[i].fileLinkName + '</a></li>';
 				} else {
 					pdfListHtml = pdfListHtml + '<li class="collection-item" data-file-name="' + pdfs[i].fileName +'"><a href="#" class="teal-text">' + pdfs[i].fileLinkName + '</a></li>';
@@ -88,9 +90,47 @@ $(document).ready(function() {
 		}
 		$('#course-title').text(courseCategory);
 		$('#pdf-list li:last').after(pdfListHtml);
-		$('#pdf-container').show().siblings().hide();
+		$('#pdf-container').show().siblings().hide();		
+		$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
+		$('#adobe-dc-full-window').show().siblings().hide();	
+		var divId = 'adobe-dc-full-window';
+		
+		/* setup viewer configurations */
+		const viewerConfig = {
+			defaultViewMode: 'FIT_TO_WIDTH',
+			embedMode: 'FULL_WINDOW',
+			enableAnnotationAPIs: true
+		};
+		
+		setPreviewFile(divId, viewerConfig, previewFileConfig);
 	});	
 })
+
+/** 
+ * To set preview file properties 
+ *
+ * @param divId
+ * @param viewerConfig
+ * @param previewFileConfig
+ */
+function setPreviewFile(divId, viewerConfig, previewFileConfig) {
+	var adobeDCView = new AdobeDC.View({
+		clientId: CLIENT_ID,
+		divId: divId
+	});
+
+	adobeDCView.previewFile({
+		content: {
+			location: {
+				url: previewFileConfig.url
+			}
+		},
+		metaData: {
+			fileName: previewFileConfig.fileName,
+			id: previewFileConfig.id
+		}
+	}, viewerConfig);
+}
 
 /* to login user */
 function loginUser() {
@@ -111,10 +151,12 @@ function loginUser() {
 			cache : false,
 			timeout : 600000,
 			success : function(data) {
-				sessionStorage.setItem('user', data.user);
+				sessionStorage.setItem('firstName', data.firstName);
+				sessionStorage.setItem('lastName', data.lastName);
+				sessionStorage.setItem('email', data.email);
 				$('#login-form').trigger("reset");
 				$('.without-session').hide();
-				$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('user'));
+				$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('firstName'));
 				$('.with-session').show();
 				$('#courses-container').show();
 				var toastHTML = '<span>' + data.success + '</span>';

@@ -12,6 +12,37 @@
 			</ul>
 		</div>
 	</div>
-	<div id="" class="col s12 m5"></div>
+	<div id="pdf-render-container" class="col s12 m5">
+		<div id="mode-btn-container" class="row">
+			<div class="col s12">
+				<div class="row">
+				    <div class="col s4">
+						<a id="btn-full"
+							class="view-pdf emb-btn waves-effect waves-light btn"
+							data-embed-mode="FULL_WINDOW">FULL <span
+							class="hide-on-small-and-down">WINDOW</span></a>
+					</div>
+					<div class="col s4">
+						<a id="btn-sized"
+							class="view-pdf emb-btn waves-effect waves-light btn"
+							data-embed-mode="SIZED_CONTAINER">SIZED <span
+							class="hide-on-small-and-down">CONTAINER</span></a>
+					</div>					
+					<div class="col s4">
+						<a id="btn-inline"
+							class="view-pdf emb-btn waves-effect waves-light btn"
+							data-embed-mode="IN_LINE">IN LINE</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="center col s12">
+				<div id="adobe-dc-sized-container" style="height: 400px"></div>
+				<div id="adobe-dc-full-window" style="height: 400px"></div>
+				<div id="adobe-dc-in-line"></div>
+			</div>
+		</div>
+	</div>
 	<div id="whiteboard" class="col s12 m4"></div>
 </div>

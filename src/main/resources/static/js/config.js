@@ -2,7 +2,7 @@ const origin = document.location.origin + '/pdf/';
 
 const FILE_CONFIG = [ {
 	"id" : 1,
-	"url" : origin + "ms-office/word.pdf",
+	"url" : origin + "ms-office/pp.pdf",
 	"fileName" : "word.pdf",
 	"courseCategory" : "MS Office",
 	"fileLinkName" : "MS Word",

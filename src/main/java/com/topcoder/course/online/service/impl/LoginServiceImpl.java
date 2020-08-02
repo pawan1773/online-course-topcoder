@@ -48,7 +48,9 @@ public class LoginServiceImpl implements LoginService {
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
 			map.put("success", "User logged in successfully.");
-			map.put("user", user.getFirstName());
+			map.put("firstName", user.getFirstName());
+			map.put("lastName", user.getLastName());
+			map.put("email", user.getEmail());
 		}
 		return map;
 	}
