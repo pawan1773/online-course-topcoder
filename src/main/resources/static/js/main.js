@@ -44,6 +44,11 @@ $(document).ready(function() {
 		$('#recovery-form').trigger("reset");
 		$('#login-form-container').show().siblings().hide();
 	});
+	
+	/* to display courses container */
+	$('#back-courses').click(function() {
+		$('#courses-container').show().siblings().hide();
+	});
 
 	/* to display password recovery form */
 	$('.forgot-password-link').click(function() {
