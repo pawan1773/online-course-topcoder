@@ -27,17 +27,20 @@
 	<!-- content container: start -->
 	<div id="content-container" class="container">
 		<!-- registration-form container: start -->
-		<div id="registration-form-container" class="row center">
+		<div id="registration-form-container"
+			class="row center without-session">
 			<div th:replace="register :: register"></div>
 		</div>
 		<!-- registration-form container: end -->
 		<!-- login-form container: start -->
-		<div id="login-form-container" class="row center hidden">
+		<div id="login-form-container"
+			class="row center without-session hidden">
 			<div th:replace="login :: login"></div>
 		</div>
 		<!-- login-form container: end -->
 		<!-- password-recovery-form container: start -->
-		<div id="password-recovery-form-container" class="row center hidden">
+		<div id="password-recovery-form-container"
+			class="row center without-session hidden">
 			<div th:replace="recovery :: recovery"></div>
 		</div>
 		<!-- password-recovery-form container: end -->
@@ -48,8 +51,7 @@
 		</div>
 		<!-- courses container: end -->
 		<!-- pdf container: start -->
-		<div id="pdf-container" class="row hidden"
-			style="margin-top: 15px">
+		<div id="pdf-container" class="row hidden" style="margin-top: 15px">
 			<div th:replace="pdf :: pdf"></div>
 		</div>
 		<!-- pdf container: end -->

@@ -1,5 +1,15 @@
 /* wait for document to get ready */
 $(document).ready(function() {
+	/* to prevent login if user is stored in session */
+	if (sessionStorage.getItem('user')) {
+		$('.without-session').hide();
+		$('.username-placeholder').text(
+				'Hello, ' + sessionStorage.getItem('user'));
+		$('.with-session').show();		
+		
+		$('#courses-container').show();		
+	}
+	
 	/* activate materialize side nav in mobile view */
 	$('.sidenav').sidenav();
 	
@@ -19,16 +29,7 @@ $(document).ready(function() {
 		$('.without-session').show();
 		$('.with-session').hide();
 		$('#registration-form-container').show().siblings().hide();
-	});
-
-	/* to prevent login if user is stored in session */
-	if (sessionStorage.getItem('user')) {
-		$('.without-session').hide();
-		$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('user'));
-		$('.with-session').show();
-		
-		$('#courses-container').show().siblings().hide();
-	}
+	});	
 
 	/* to display registration form */
 	$('.register-link').click(function() {
@@ -65,6 +66,7 @@ $(document).ready(function() {
 	
 	/* to get list of pdfs for particular course */
 	$('.list-pdf').click(function() {
+		$('#course-title-li').siblings().remove();
 		var courseCategory = $(this).data("course-category")
 		var pdfs = FILE_CONFIG.filter(function(obj) {
 					return obj.courseCategory === courseCategory;
@@ -109,7 +111,7 @@ function loginUser() {
 				$('.without-session').hide();
 				$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('user'));
 				$('.with-session').show();
-				$('#courses-container').show().siblings().hide();
+				$('#courses-container').show();
 				var toastHTML = '<span>' + data.success + '</span>';
 				M.toast({
 					html : toastHTML,
