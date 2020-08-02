@@ -97,10 +97,10 @@ $(document).ready(function() {
 		
 		/* setup viewer configurations */
 		const viewerConfig = {
-			defaultViewMode: 'FIT_TO_WIDTH',
-			embedMode: 'FULL_WINDOW',
-			enableAnnotationAPIs: true
-		};
+				"defaultViewMode": "FIT_WIDTH",
+				"embedMode": "FULL_WINDOW",
+				"enableAnnotationAPIs": true
+			};		
 		
 		setPreviewFile(divId, viewerConfig, previewFileConfig);
 	});	
@@ -119,7 +119,7 @@ function setPreviewFile(divId, viewerConfig, previewFileConfig) {
 		divId: divId
 	});
 
-	adobeDCView.previewFile({
+	var previewFilePromise = adobeDCView.previewFile({		
 		content: {
 			location: {
 				url: previewFileConfig.url
