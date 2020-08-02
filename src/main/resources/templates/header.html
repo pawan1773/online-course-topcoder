@@ -6,12 +6,14 @@
 				data-target="mobile-demo" class="sidenav-trigger"><i
 				class="material-icons">menu</i></a>
 			<ul class="right hide-on-med-and-down">
-				<li><a class="register-link waves-effect" href="#">Register</a></li>
-				<li><a class="login-link waves-effect" href="#">Login</a></li>
-				<li class="hidden"><a id="username-placeholder" href="#"
-					style="pointer-events: none;">Hello, <span th:text="${session.user}"></span></a></li>
-				<li class="hidden"><a class="logout-link waves-effect"
-					href="#">Logout</a></li>
+				<li class="without-session"><a
+					class="register-link waves-effect" href="#">Register</a></li>
+				<li class="without-session"><a class="login-link waves-effect"
+					href="#">Login</a></li>
+				<li class="hidden with-session"><a class="username-placeholder"
+					href="#" style="pointer-events: none;"></a></li>
+				<li class="hidden with-session"><a
+					class="logout-link waves-effect" href="#">Logout</a></li>
 			</ul>
 		</div>
 	</nav>

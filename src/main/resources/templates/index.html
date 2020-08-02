@@ -42,10 +42,13 @@
 		</div>
 		<!-- password-recovery-form container: end -->
 		<!-- courses container: start -->
-		<div id="courses-container" class="row hidden">
+		<div id="courses-container" class="row hidden" style="margin-top:15px">
 			<div th:replace="courses :: courses"></div>
 		</div>
 		<!-- courses container: end -->
+	</div>
+	<div class="progress hidden row" style="width:100px">
+		<div class="indeterminate"></div>
 	</div>
 	<!-- content container container: start -->
 	<script async
@@ -56,6 +59,5 @@
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 	<script type="text/javascript" src="/js/main.js"></script>
-
 </body>
 </html>

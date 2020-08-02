@@ -31,7 +31,7 @@ public class RegistrationController {
 	 * </p>
 	 * 
 	 * @param model
-	 * @return instance of {@linkplain ResponseEntity}
+	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
 	 */
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> registerUser(@RequestBody final RegistrationRequestModel model) {

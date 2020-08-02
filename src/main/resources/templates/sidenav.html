@@ -1,11 +1,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="sidenav">
-	<ul class="sidenav" id="mobile-demo" style="width: 150px">
-		<li><a class="register-link waves-effect teal-text" href="#">Register</a></li>
-		<li><a class="login-link waves-effect teal-text" href="#">Login</a></li>
-		<li class="hidden"><a id="username-placeholder teal-text"
-			href="#" style="pointer-events: none;">User</a></li>
-		<li class="hidden">><a class="logout-link waves-effect teal-text"
-			href="#">Logout</a></li>
+	<ul class="sidenav" id="mobile-demo" style="width: 180px">
+		<li class="without-session"><a
+			class="register-link waves-effect teal-text" href="#">Register</a></li>
+		<li class="without-session"><a
+			class="login-link waves-effect teal-text" href="#">Login</a></li>
+		<li class="hidden with-session"><a
+			class="username-placeholder teal-text" href="#"
+			style="pointer-events: none;"></a></li>
+		<li class="hidden with-session"><a
+			class="logout-link waves-effect teal-text" href="#">Logout</a></li>
 	</ul>
 </div>
