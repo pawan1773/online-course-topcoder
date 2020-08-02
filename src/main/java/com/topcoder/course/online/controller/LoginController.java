@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.topcoder.course.online.model.request.LoginRequestModel;
 import com.topcoder.course.online.service.LoginService;
 
+/**
+ * <p>
+ * To handle HTTP requests for user login.
+ * </p>
+ * 
+ * @author joginder.pawan@gmail.com
+ */
 @RestController
 public class LoginController {
 

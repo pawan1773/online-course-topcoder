@@ -3,10 +3,12 @@ $(document).ready(function() {
 	/* activate materialize side nav in mobile view */
 	$('.sidenav').sidenav();
 	
+	/* to start progress bar */
 	$(document).ajaxStart(function() {
 		$('.progress').show();
 	});
 
+	/* to end progress bar */
 	$(document).ajaxComplete(function() {
 		$('.progress').hide();
 	});
@@ -24,6 +26,7 @@ $(document).ready(function() {
 		$('.without-session').hide();
 		$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('user'));
 		$('.with-session').show();
+		
 		$('#courses-container').show().siblings().hide();
 	}
 
@@ -59,6 +62,27 @@ $(document).ready(function() {
 		event.preventDefault();
 		loginUser();
 	});
+	
+	/* to get list of pdfs for particular course */
+	$('.list-pdf').click(function() {
+		var courseCategory = $(this).data("course-category")
+		var pdfs = FILE_CONFIG.filter(function(obj) {
+					return obj.courseCategory === courseCategory;
+				});
+		var pdfListHtml = '';
+		for (var i = 0; i < pdfs.length; i++) {
+			if (pdfs[i].courseCategory === courseCategory) {
+				if(i === 0) {
+					pdfListHtml = pdfListHtml + '<li class="collection-item active" data-file-name="' + pdfs[i].fileName +'"><a href="#" class="white-text">' + pdfs[i].fileLinkName + '</a></li>';
+				} else {
+					pdfListHtml = pdfListHtml + '<li class="collection-item" data-file-name="' + pdfs[i].fileName +'"><a href="#" class="teal-text">' + pdfs[i].fileLinkName + '</a></li>';
+				}
+			}
+		}
+		$('#course-title').text(courseCategory);
+		$('#pdf-list li:last').after(pdfListHtml);
+		$('#pdf-container').show().siblings().hide();
+	});	
 })
 
 /* to login user */
@@ -86,18 +110,15 @@ function loginUser() {
 				$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('user'));
 				$('.with-session').show();
 				$('#courses-container').show().siblings().hide();
-				var toastHTML = '<span>'
-						+ data.success
-						+ '</span><button class="white-text btn-flat toast-action">Close</button>';
+				var toastHTML = '<span>' + data.success + '</span>';
 				M.toast({
 					html : toastHTML,
 					classes : 'teal lighten-1'
 				});
 			},
 			error : function(textStatus, errorThrown) {
-				var toastHTML = '<span>'
-						+ textStatus.responseJSON.error
-						+ '</span><button class="white-text btn-flat toast-action">Close</button>';
+				var toastHTML = '<span>' + textStatus.responseJSON.error
+					+ '</span>';
 				M.toast({
 					html : toastHTML,
 					classes : 'red lighten-1'
@@ -135,18 +156,15 @@ function registerUser() {
 			success : function(data) {
 				$('#login-form').trigger("reset");
 				$('#login-form-container').show().siblings().hide();
-				var toastHTML = '<span>'
-						+ data.success
-						+ '</span><button class="white-text btn-flat toast-action">Close</button>';
+				var toastHTML = '<span>' + data.success + '</span>';
 				M.toast({
 					html : toastHTML,
 					classes : 'teal lighten-1'
 				});
 			},
 			error : function(textStatus, errorThrown) {
-				var toastHTML = '<span>'
-						+ textStatus.responseJSON.error
-						+ '</span><button class="white-text btn-flat toast-action">Close</button>';
+				var toastHTML = '<span>' + textStatus.responseJSON.error
+					+ '</span>';
 				M.toast({
 					html : toastHTML,
 					classes : 'red lighten-1'
