@@ -2,12 +2,11 @@
 $(document).ready(function () {
 	
 	/* to prevent login if user is stored in session */
-	if (sessionStorage.getItem('firstName')) {
+	if (sessionStorage.getItem('firstName') != null) {
 		$('.without-session').hide();
 		$('.username-placeholder').text(
 			'Hello, ' + sessionStorage.getItem('firstName'));
 		$('.with-session').show();
-
 		$('#courses-container').show();
 	}
 
@@ -26,6 +25,18 @@ $(document).ready(function () {
 
 	/* to clear session storage on logout */
 	$('.logout-link').click(function () {
+		const userInfo = getUserInfoFromSessionStorage();
+		
+		/* send student session time to gtag */
+		if(isStudent(userInfo)) {
+			const sessionTime = new Date() - Date.parse(sessionStorage.getItem("loggedInTime"));
+			gtag('event', userInfo.firstName + 'has spent ' + sessionTime + 'milliseconds on application', {
+				'event_category': 'LOGGED_IN_PERIOD',
+				'event_label': 'LOGGED_IN_PERIOD'
+			});				
+		}
+		
+		
 		sessionStorage.clear();
 		$('.without-session').show();
 		$('.with-session').hide();
@@ -226,6 +237,7 @@ function loginUser() {
 		cache: false,
 		timeout: 600000,
 		success: function (data) {
+			sessionStorage.setItem("loggedInTime", new Date());
 			sessionStorage.setItem('firstName', data.firstName);
 			sessionStorage.setItem('lastName', data.lastName);
 			sessionStorage.setItem('email', data.email);
