@@ -34,8 +34,7 @@ $(document).ready(function () {
 				'event_category': 'LOGGED_IN_PERIOD',
 				'event_label': 'LOGGED_IN_PERIOD'
 			});				
-		}
-		
+		}	
 		
 		sessionStorage.clear();
 		$('.without-session').show();
@@ -322,6 +321,7 @@ function registerUser() {
 function handleEventsOnPDF(adobeDCView) {
 	const userInfo = getUserInfoFromSessionStorage();
 	const totalPages = sessionStorage.getItem("totalPages");
+	const fileName = sessionStorage.getItem("pdfTitle") + ".pdf";
 	adobeDCView.registerCallback(AdobeDC.View.Enum.CallbackType.EVENT_LISTENER, (e) => {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
@@ -354,9 +354,25 @@ function handleEventsOnPDF(adobeDCView) {
 					'event_label': 'DOCUMENT_PRINT'
 				});
 				break;
+			case 'PAGES_IN_VIEW_CHANGE':
+				var pageEnteredTime = new Date();
+				var startPage = e.data.startPage.pageNumber;
+				if(startPage != e.data.endPage.pageNumber && isStudent(userInfo)) {	
+					var pageChangeTime = new Date() - pageEnteredTime;
+					gtag('event', userInfo.firstName + ' has read all the content of page ' + startPage + ' of ' + fileName, {
+						'event_category': 'READ_PAGE_CONTENT',
+						'event_label': 'READ_PAGE_CONTENT'
+					});		
+					
+					gtag('event', userInfo.firstName + ' has spent ' + pageChangeTime + ' milliseconds on page ' + startPage, {
+						'event_category': 'PAGE_TIME',
+						'event_label': 'PAGE_TIME'
+					});
+				} 
+				break;
 			case 'CURRENT_ACTIVE_PAGE':				
 				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
-					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + e.data.fileName, {
+					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + fileName, {
 						'event_category': 'SCROLLED_THROUGH',
 						'event_label': 'SCROLLED_THROUGH'
 					});					
@@ -366,7 +382,7 @@ function handleEventsOnPDF(adobeDCView) {
 				const comment = e.data.bodyValue;
 				const motivation = e.data.motivation;
 				const fileName = sessionStorage.getItem("pdfTitle");
-
+				
 				/* check if assignment completed */
 				if (assignmentCompleted(userInfo, comment, motivation)) {
 					gtag('event', userInfo.firstName + ' has completed the assignment on ' + fileName, {
