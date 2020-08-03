@@ -380,8 +380,7 @@ function handleEventsOnPDF(adobeDCView) {
 				break;
 			case 'ANNOTATION_ADDED':
 				const comment = e.data.bodyValue;
-				const motivation = e.data.motivation;
-				const fileName = sessionStorage.getItem("pdfTitle");
+				const motivation = e.data.motivation;				
 				
 				/* check if assignment completed */
 				if (assignmentCompleted(userInfo, comment, motivation)) {
