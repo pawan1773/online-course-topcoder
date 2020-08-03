@@ -49,6 +49,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			map.put("error", "User already exists.");
 		} else {
 			final Role role = this.roleRepository.findByRoleName(model.getRole()).get();
+		
 			final User user = new User();
 			user.setEmail(model.getEmail());
 			user.setFirstName(model.getFirstName());

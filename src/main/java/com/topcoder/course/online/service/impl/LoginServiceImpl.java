@@ -43,7 +43,7 @@ public class LoginServiceImpl implements LoginService {
 			map.put("status", HttpStatus.BAD_REQUEST.value());
 			map.put("statusMessage", HttpStatus.BAD_REQUEST.name());
 			map.put("error", "Invalid email and password.");
-		} else {
+		} else {			
 			final User user = oUser.get();
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
@@ -51,6 +51,7 @@ public class LoginServiceImpl implements LoginService {
 			map.put("firstName", user.getFirstName());
 			map.put("lastName", user.getLastName());
 			map.put("email", user.getEmail());
+			map.put("role", user.getRole().getRoleName());
 		}
 		return map;
 	}
