@@ -320,21 +320,23 @@ function registerUser() {
  */
 function handleEventsOnPDF(adobeDCView) {
 	const userInfo = getUserInfoFromSessionStorage();
-	const totalPages = sessionStorage.getItem("totalPages");
-	const fileName = sessionStorage.getItem("pdfTitle") + ".pdf";
+	var totalPages = 0;
+	var fileName = '';
 	adobeDCView.registerCallback(AdobeDC.View.Enum.CallbackType.EVENT_LISTENER, (e) => {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
+				fileName = e.data.fileName;
 				if(isStudent(userInfo)) {
-					gtag('event', userInfo.firstName + ' has opened ' + e.data.fileName, {
+					gtag('event', userInfo.firstName + ' has opened ' + fileName, {
 						'event_category': 'DOCUMENT_OPEN',
 						'event_label': 'DOCUMENT_OPEN'
 					});
 				}
 				break;
-			case 'PAGE_VIEW':				
+			case 'PAGE_VIEW':	
+				totalPages = sessionStorage.getItem("totalPages");
 				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
-					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + e.data.fileName, {
+					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + fileName, {
 						'event_category': 'SCROLLED_THROUGH',
 						'event_label': 'SCROLLED_THROUGH'
 					});					
@@ -342,14 +344,14 @@ function handleEventsOnPDF(adobeDCView) {
 				break;
 			case 'DOCUMENT_DOWNLOAD':
 				if(isStudent(userInfo)) {
-					gtag('event', userInfo.firstName + ' has downloaded ' + e.data.fileName, {
+					gtag('event', userInfo.firstName + ' has downloaded ' + fileName, {
 						'event_category': 'DOCUMENT_DOWNLOAD',
 						'event_label': 'DOCUMENT_DOWNLOAD'
 					});
 				}
 				break;
 			case 'DOCUMENT_PRINT':
-				gtag('event', userInfo.firstName + ' has downloaded ' + e.data.fileName, {
+				gtag('event', userInfo.firstName + ' has downloaded ' + fileName, {
 					'event_category': 'DOCUMENT_PRINT',
 					'event_label': 'DOCUMENT_PRINT'
 				});
@@ -370,7 +372,8 @@ function handleEventsOnPDF(adobeDCView) {
 					});
 				} 
 				break;
-			case 'CURRENT_ACTIVE_PAGE':				
+			case 'CURRENT_ACTIVE_PAGE':	
+				totalPages = sessionStorage.getItem("totalPages");
 				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
 					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + fileName, {
 						'event_category': 'SCROLLED_THROUGH',
@@ -445,10 +448,7 @@ function setPdfMetaDataInSession(previewFilePromise) {
 	return previewFilePromise.then(function (adobeViewer) {
 		adobeViewer.getAPIs().then(function (apis) {
 			apis.getPDFMetadata()
-				.then(result => {
-					sessionStorage.setItem("totalPages", result.numPages);
-					sessionStorage.setItem("pdfTitle", result.pdfTitle);
-					})
+				.then(result => sessionStorage.setItem("totalPages", result.numPages))
 				.catch(error => console.log(error));
 		});
 	});
