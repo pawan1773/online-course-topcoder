@@ -30,7 +30,7 @@ $(document).ready(function () {
 		/* send student session time to gtag */
 		if(isStudent(userInfo)) {
 			const sessionTime = new Date() - Date.parse(sessionStorage.getItem("loggedInTime"));
-			gtag('event', userInfo.firstName + ' has spent ' + sessionTime + 'milliseconds on application', {
+			gtag('event', userInfo.firstName + ' has spent ' + sessionTime + ' milliseconds on application', {
 				'event_category': 'LOGGED_IN_PERIOD',
 				'event_label': 'LOGGED_IN_PERIOD'
 			});				
@@ -325,34 +325,33 @@ function handleEventsOnPDF(adobeDCView) {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
 				if(isStudent(userInfo)) {
-					gtag('event', userInfo.firstName + ' has downloaded ' + e.data.fileName, {
+					gtag('event', userInfo.firstName + ' has opened ' + e.data.fileName, {
 						'event_category': 'DOCUMENT_OPEN',
 						'event_label': 'DOCUMENT_OPEN'
 					});
 				}
 				break;
 			case 'PAGE_VIEW':
-				gtag('event', e.data.pageNumber + ' of ' + e.data.fileName + ' viewed.', {
-					'event_category': 'PAGE_VIEW',
-					'event_label': 'PAGE_VIEW'
-				});
+				const totalPages = sessionStorage.getItem("totalPages");
+				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
+					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + e.data.fileName, {
+						'event_category': 'SCROLLED_THROUGH',
+						'event_label': 'SCROLLED_THROUGH'
+					});					
+				}				
 				break;
 			case 'DOCUMENT_DOWNLOAD':
-				gtag('event', e.data.fileName + ' downloaded.', {
-					'event_category': 'DOCUMENT_DOWNLOAD',
-					'event_label': 'DOCUMENT_DOWNLOAD'
-				});
+				if(isStudent(userInfo)) {
+					gtag('event', userInfo.firstName + ' has downloaded ' + e.data.fileName, {
+						'event_category': 'DOCUMENT_DOWNLOAD',
+						'event_label': 'DOCUMENT_DOWNLOAD'
+					});
+				}
 				break;
 			case 'DOCUMENT_PRINT':
-				gtag('event', e.data.fileName + ' printed.', {
+				gtag('event', userInfo.firstName + ' has downloaded ' + e.data.fileName, {
 					'event_category': 'DOCUMENT_PRINT',
 					'event_label': 'DOCUMENT_PRINT'
-				});
-				break;
-			case 'TEXT_COPY':
-				gtag('event', e.data.copiedText + ' copied from ' + e.data.fileName, {
-					'event_category': 'TEXT_COPY',
-					'event_label': 'TEXT_COPY'
 				});
 				break;
 			case 'CURRENT_ACTIVE_PAGE':
