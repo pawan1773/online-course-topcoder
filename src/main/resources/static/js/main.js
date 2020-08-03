@@ -70,8 +70,8 @@ $(document).ready(function() {
 	});
 	
 	/* to show pdfs */
-	$('.view-pdf').click(function() {		
-		var courseCategory = $(this).data("course-category");		
+	$(document).on('click', '.view-pdf', function() {		
+		var courseCategory = $(this).data('course-category');		
 		var pdfs = FILE_CONFIG.filter(function(obj) {
 					return obj.courseCategory === courseCategory;
 				});
@@ -94,19 +94,30 @@ $(document).ready(function() {
 			}
 			$('#course-title').text(courseCategory);
 			$('#pdf-list li:last').after(pdfListHtml);
-			$('.emb-btn').data("course-category", previewFileConfig.courseCategory);
-			$('.emb-btn').data("file-name", previewFileConfig.fileName);
+			$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
+			$('.emb-btn').data('file-name', previewFileConfig.fileName);
 			$('#pdf-container').show().siblings().hide();		
 			$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
 			$('#adobe-dc-full-window').show().siblings().hide();
-		} else {			
+		} else {	
+			var fileName = $(this).data('file-name');
+			for (var i = 0; i < pdfs.length; i++) {
+				if (pdfs[i].courseCategory === courseCategory && pdfs[i].fileName === fileName) {	
+					previewFileConfig = pdfs[i];
+				}
+			}
 			if ($(this).hasClass('emb-btn')) {				
 				$('.emb-btn').removeClass('disabled');
 				$(this).addClass('disabled');
-			}
-			
-			var fileName = $(this).data("file-name");
-			embedMode = $(this).data("embed-mode");
+				embedMode = $(this).data("embed-mode");
+			} else {
+				$(this).addClass('white-text')
+				$(this).parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
+				$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
+				$('.emb-btn').data('file-name', previewFileConfig.fileName);
+				$('.emb-btn').removeClass('disabled');
+				$('#btn-full').addClass('disabled');
+			}					
 			
 			if (embedMode === 'SIZED_CONTAINER') {
 				divId = 'adobe-dc-sized-container';
@@ -119,11 +130,7 @@ $(document).ready(function() {
 				$('#adobe-dc-in-line').show().siblings().hide();
 			}
 			
-			for (var i = 0; i < pdfs.length; i++) {
-				if (pdfs[i].courseCategory === courseCategory && pdfs[i].fileName === fileName) {	
-					previewFileConfig = pdfs[i];
-				}
-			}
+			
 		}		
 		
 		/* setup viewer configurations */
