@@ -30,7 +30,7 @@ $(document).ready(function () {
 		/* send student session time to gtag */
 		if(isStudent(userInfo)) {
 			const sessionTime = new Date() - Date.parse(sessionStorage.getItem("loggedInTime"));
-			gtag('event', userInfo.firstName + 'has spent ' + sessionTime + 'milliseconds on application', {
+			gtag('event', userInfo.firstName + ' has spent ' + sessionTime + 'milliseconds on application', {
 				'event_category': 'LOGGED_IN_PERIOD',
 				'event_label': 'LOGGED_IN_PERIOD'
 			});				
@@ -325,7 +325,7 @@ function handleEventsOnPDF(adobeDCView) {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
 				if(isStudent(userInfo)) {
-					gtag('event', userInfo.firstName + 'has downloaded ' + e.data.fileName, {
+					gtag('event', userInfo.firstName + ' has downloaded ' + e.data.fileName, {
 						'event_category': 'DOCUMENT_OPEN',
 						'event_label': 'DOCUMENT_OPEN'
 					});
@@ -371,7 +371,7 @@ function handleEventsOnPDF(adobeDCView) {
 
 				/* check if assignment completed */
 				if (assignmentCompleted(userInfo, comment, motivation)) {
-					gtag('event', userInfo.firstName + 'has completed the assignment on ' + fileName, {
+					gtag('event', userInfo.firstName + ' has completed the assignment on ' + fileName, {
 						'event_category': 'ASSIGNMENT_COMPLETED',
 						'event_label': 'ASSIGNMENT_COMPLETED'
 					});
@@ -379,7 +379,7 @@ function handleEventsOnPDF(adobeDCView) {
                 
 				/* check if student has commented */
 				if(isStudent(userInfo) && motivation === 'commenting') {
-					gtag('event', userInfo.firstName + 'has commented on ' + fileName, {
+					gtag('event', userInfo.firstName + ' has commented on ' + fileName, {
 						'event_category': 'COMMENT_ADDED',
 						'event_label': 'COMMENT_ADDED'
 					});
@@ -387,7 +387,7 @@ function handleEventsOnPDF(adobeDCView) {
 				
 				/* check if student has replied to comment */
 				if(isStudent(userInfo) && motivation === 'replying') {
-					gtag('event', userInfo.firstName + 'has replied on ' + fileName, {
+					gtag('event', userInfo.firstName + ' has replied on ' + fileName, {
 						'event_category': 'REPLIED_TO_COMMENT',
 						'event_label': 'REPLIED_TO_COMMENT'
 					});
