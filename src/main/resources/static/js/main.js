@@ -1,7 +1,7 @@
 /* wait for document to get ready */
 $(document).ready(function () {
 	
-	/* to prevent login if user is stored in session */
+	/* to bypass login if user is already logged in */
 	if (sessionStorage.getItem('firstName') != null) {
 		$('.without-session').hide();
 		$('.username-placeholder').text(
@@ -321,6 +321,7 @@ function registerUser() {
  */
 function handleEventsOnPDF(adobeDCView) {
 	const userInfo = getUserInfoFromSessionStorage();
+	const totalPages = sessionStorage.getItem("totalPages");
 	adobeDCView.registerCallback(AdobeDC.View.Enum.CallbackType.EVENT_LISTENER, (e) => {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
@@ -331,8 +332,7 @@ function handleEventsOnPDF(adobeDCView) {
 					});
 				}
 				break;
-			case 'PAGE_VIEW':
-				const totalPages = sessionStorage.getItem("totalPages");
+			case 'PAGE_VIEW':				
 				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
 					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + e.data.fileName, {
 						'event_category': 'SCROLLED_THROUGH',
@@ -354,8 +354,7 @@ function handleEventsOnPDF(adobeDCView) {
 					'event_label': 'DOCUMENT_PRINT'
 				});
 				break;
-			case 'CURRENT_ACTIVE_PAGE':
-				const totalPages = sessionStorage.getItem("totalPages");
+			case 'CURRENT_ACTIVE_PAGE':				
 				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
 					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + e.data.fileName, {
 						'event_category': 'SCROLLED_THROUGH',
@@ -402,6 +401,7 @@ function handleEventsOnPDF(adobeDCView) {
 
 /**
  * To check if user is a student
+ * 
  * @param userInfo
  * @returns true if Student
  */
