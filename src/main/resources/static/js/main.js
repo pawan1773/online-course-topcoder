@@ -332,15 +332,22 @@ function downloadPdf() {
 		contentType: "application/json",
 		url: "/generatePdf",
 		data: JSON.stringify(pdfRequestModel),
-		dataType: 'json',
 		cache: false,
 		timeout: 600000,
 		success: function (data) {
-			alert(data.location)
+			const linkSource = 'data:application/pdf;base64,' + data.encodedFile;
+		    const downloadLink = document.createElement("a");
+		    downloadLink.href = linkSource;
+		    downloadLink.download = "notes.pdf";
+		    downloadLink.click();
+		    var toastHTML = '<span>' + data.success + '</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'teal lighten-1'
+			});
 		},
-		error: function (textStatus, errorThrown) {
-			var toastHTML = '<span>' + textStatus.responseJSON.error +
-				'</span>';
+		error: function (textStatus, errorThrown) {			
+			var toastHTML = '<span>Some error occured. Please try again.</span>';
 			M.toast({
 				html: toastHTML,
 				classes: 'red lighten-1'

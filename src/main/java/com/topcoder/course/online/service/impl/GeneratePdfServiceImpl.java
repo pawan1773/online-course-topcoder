@@ -1,11 +1,13 @@
 package com.topcoder.course.online.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -82,19 +84,29 @@ public class GeneratePdfServiceImpl implements GeneratePdfService {
 			final FileRef outputPdfRef = createPDFOperation.execute(executionContext);
 			outputPdfRef.saveAs(pdfDirectory + "notes.pdf");
 
+			final File pdfFile = new File(pdfDirectory + "notes.pdf");
+			final FileInputStream pdfFis = new FileInputStream(pdfFile);
+			byte fileData[] = new byte[(int) pdfFile.length()];
+			pdfFis.read(fileData);
+			final String encodedFile = Base64.getEncoder().encodeToString(fileData);
+	
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
 			map.put("success", "File link generated");
-			map.put("location", pdfDirectory.substring(pdfDirectory.indexOf(model.getUser()) - 1) + "notes.pdf");
+			map.put("encodedFile", encodedFile);
+
+			pdfFis.close();
 			return map;
 		} catch (final ServiceApiException | IOException | SdkException | ServiceUsageException ex) {
 			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			map.put("statusMessage", HttpStatus.INTERNAL_SERVER_ERROR.name());
 			map.put("error", "Download error. Please try again.");
+
 		} catch (final Exception ex) {
 			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			map.put("statusMessage", HttpStatus.INTERNAL_SERVER_ERROR.name());
 			map.put("error", "Download error. Please try again.");
+
 		}
 		return map;
 	}

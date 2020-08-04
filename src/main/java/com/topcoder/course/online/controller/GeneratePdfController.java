@@ -34,9 +34,10 @@ public class GeneratePdfController {
 	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
 	 */
 	@PostMapping(value = "/generatePdf", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, Object>> loginUser(@RequestBody final GeneratePdfRequestModel model) {
+	public ResponseEntity<?> generatePdf(@RequestBody final GeneratePdfRequestModel model) {
 		final Map<String, Object> body = this.generatePdfServiceImpl.generatePdf(model);
 
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
+
 }
