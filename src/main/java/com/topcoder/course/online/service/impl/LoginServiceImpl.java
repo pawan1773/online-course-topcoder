@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.topcoder.course.online.entity.User;
+import com.topcoder.course.online.model.request.ForgotPasswordRequestModel;
 import com.topcoder.course.online.model.request.LoginRequestModel;
 import com.topcoder.course.online.repository.UserRepository;
 import com.topcoder.course.online.service.LoginService;
@@ -53,6 +54,35 @@ public class LoginServiceImpl implements LoginService {
 			map.put("email", user.getEmail());
 			map.put("role", user.getRole().getRoleName());
 		}
+		return map;
+	}
+
+	/**
+	 * <p>
+	 * To change password.
+	 * </p>
+	 * 
+	 * @param model
+	 * @return {@linkplain Map}
+	 */
+	@Override
+	public Map<String, Object> changePassword(ForgotPasswordRequestModel model) {
+		Optional<User> oUser = this.userRepository.findByEmailAndRecoveryKey(model.getEmail(), model.getKey());
+		final Map<String, Object> map = new HashMap<>();
+		if (!oUser.isPresent()) {
+			map.put("status", HttpStatus.BAD_REQUEST.value());
+			map.put("statusMessage", HttpStatus.BAD_REQUEST.name());
+			map.put("error", "Invalid email and key.");
+		} else {			
+			final User user = oUser.get();
+			user.setPassword(model.getPassword());
+			map.put("status", HttpStatus.OK.value());
+			map.put("statusMessage", HttpStatus.OK.name());
+			map.put("success", "Password changed successfully.");
+			
+            this.userRepository.save(user);
+		}
+		
 		return map;
 	}
 }

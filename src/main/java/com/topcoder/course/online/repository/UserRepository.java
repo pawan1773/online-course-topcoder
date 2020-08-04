@@ -28,4 +28,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * @return {@linkplain Optional} of {@link User}
 	 */
 	Optional<User> findByEmailAndPassword(final String email, final String password);
+	
+	/**
+	 * <p>
+	 * To find user by email and key
+	 * </p>
+	 * 
+	 * @param email
+	 * @param key
+	 * @return {@linkplain Optional} of {@link User}
+	 */
+	Optional<User> findByEmailAndRecoveryKey(final String email, final String key);
 }

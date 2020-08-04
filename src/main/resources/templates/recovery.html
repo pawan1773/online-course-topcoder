@@ -12,7 +12,8 @@
 		<div class="row margin-b1">
 			<div class="input-field col s12">
 				<input id="recovery-password" type="password" class="validate"
-					maxlength="50" required> <label for="recovery-password">New
+					maxlength="50" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,50}"
+					required> <label for="recovery-password">New
 					Password</label> <span class="helper-text"
 					data-error="Please enter password"></span>
 			</div>

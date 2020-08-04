@@ -55,6 +55,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			user.setFirstName(model.getFirstName());
 			user.setLastName(model.getLastName());
 			user.setPassword(model.getPassword());
+			user.setRecoveryKey(model.getRecoveryKey());
 			user.setRole(role);
 
 			this.userRepository.save(user);
