@@ -18,3 +18,8 @@ body {
 .hover-effect:hover {
 	background-color: red;
 }
+
+#canvas {
+	cursor: crosshair;
+	border: 1px solid #000000;
+}

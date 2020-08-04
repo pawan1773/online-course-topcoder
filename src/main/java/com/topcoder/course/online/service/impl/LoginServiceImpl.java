@@ -38,7 +38,7 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public Map<String, Object> loginUser(final LoginRequestModel model) {
 		Optional<User> oUser = this.userRepository.findByEmailAndPassword(model.getEmail(), model.getPassword());
-		final Map<String, Object> map = new HashMap<>(4);
+		final Map<String, Object> map = new HashMap<>();
 		if (!oUser.isPresent()) {
 			map.put("status", HttpStatus.BAD_REQUEST.value());
 			map.put("statusMessage", HttpStatus.BAD_REQUEST.name());
