@@ -1,0 +1,46 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="upload">
+	<h5 class="teal-text">Upload PDF</h5>
+	<form id="upload-form" method="post" class="col s12 m6 offset-m3">
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<input id="file_link_name" name="fileLinkName" type="text"
+					accept="application/pdf" class="validate" maxlength="30" required>
+				<label for="file_link_name">File Label</label> <span
+					class="helper-text" data-error="Please enter file name"></span>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<select id="course_category" name="courseCategory">
+					<option value="" disabled selected>Choose course</option>
+					<option value="MS Office">MS Office</option>
+					<option value="Web Designing">Web Designing</option>
+					<option value="Programming">Programming</option>
+				</select> <label>Course Type</label>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="file-field input-field">
+				<div class="btn">
+					<span>File</span> <input type="file" name="file"
+						accept="application/pdf" required>
+				</div>
+				<div class="file-path-wrapper">
+					<input class="file-path validate" type="text" required>
+				</div>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<button class="btn waves-effect right" type="submit" name="action">SUBMIT
+				</button>
+			</div>
+		</div>
+		<div class="row margin-b1">
+			<div class="input-field col s12">
+				<a class="back-courses teal-text" href="#">View Courses</a>
+			</div>
+		</div>
+	</form>
+</div>

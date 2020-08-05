@@ -1,17 +1,25 @@
 /* wait for document to get ready */
 $(document).ready(function () {
+	const userInfo = getUserInfoFromSessionStorage();
 	
 	/* to bypass login if user is already logged in */
-	if (sessionStorage.getItem('firstName') != null) {
+	if (userInfo.firstName != null) {
 		$('.without-session').hide();
 		$('.username-placeholder').text(
 			'Hello, ' + sessionStorage.getItem('firstName'));
 		$('.with-session').show();
 		$('#courses-container').show();
+		
+		if(userInfo.role === 'Student') {
+			$('.upload-li').hide();
+		}
 	}
 
 	/* activate materialize side nav in mobile view */
 	$('.sidenav').sidenav();
+	
+	/* activate materialize select */
+	$('select').formSelect();
 
 	/* to start progress bar */
 	$(document).ajaxStart(function () {
@@ -25,8 +33,7 @@ $(document).ready(function () {
 
 	/* to clear session storage on logout */
 	$('.logout-link').click(function () {
-		const userInfo = getUserInfoFromSessionStorage();
-		
+				
 		/* send student session time to gtag */
 		if(isStudent(userInfo)) {
 			const sessionTime = new Date() - Date.parse(sessionStorage.getItem("loggedInTime"));
@@ -47,6 +54,7 @@ $(document).ready(function () {
 	$('.register-link').click(function () {
 		$('#login-form').trigger("reset");
 		$('#recovery-form').trigger("reset");
+		$('#upload-form').trigger("reset");
 		$('#registration-form-container').show().siblings().hide();
 	});
 
@@ -54,11 +62,19 @@ $(document).ready(function () {
 	$('.login-link').click(function () {
 		$('#register-form').trigger("reset");
 		$('#recovery-form').trigger("reset");
+		$('#upload-form').trigger("reset");
 		$('#login-form-container').show().siblings().hide();
+	});
+	
+	$('.uploadpdf-link').click(function () {
+		$('#login-form').trigger("reset");
+		$('#register-form').trigger("reset");
+		$('#recovery-form').trigger("reset");
+		$('#upload-pdf-form-container').show().siblings().hide();
 	});
 
 	/* to display courses container */
-	$('#back-courses').click(function () {
+	$('.back-courses').click(function () {
 		$('#courses-container').show().siblings().hide();
 	});
 
@@ -85,6 +101,12 @@ $(document).ready(function () {
 	$('#recovery-form').submit(function (event) {
 		event.preventDefault();
 		forgotPassword();
+	});	
+	
+	/* to change password */
+	$('#upload-form').submit(function (event) {
+		event.preventDefault();
+		uploadPDF();
 	});	
 	
 	/* to download pdf */
@@ -157,7 +179,8 @@ $(document).ready(function () {
 		const viewerConfig = {
 			"defaultViewMode": "FIT_WIDTH",
 			"embedMode": embedMode,
-			"enableAnnotationAPIs": true
+			"enableAnnotationAPIs": true,
+			"showLeftHandPanel": false
 		};
 
 		/* to set preview properties */
@@ -219,7 +242,7 @@ function setPreviewFile(divId, viewerConfig, previewFileConfig) {
 	setPdfMetaDataInSession(previewFilePromise);
  
 	/* to handle events on PDF */
-	handleEventsOnPDF(adobeDCView);
+	handleEventsOnPDF(adobeDCView, previewFilePromise);
 }
 
 /** 
@@ -253,7 +276,13 @@ function loginUser() {
 			$('#login-form').trigger("reset");
 			$('.without-session').hide();
 			$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('firstName'));
-			$('.with-session').show();
+			
+			if(data.role == 'Student') {
+				$('.with-session').not('.upload-li').show();
+			} else {
+				$('.with-session').show();
+			}
+			
 			$('#courses-container').show();
 			var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
@@ -264,6 +293,44 @@ function loginUser() {
 		error: function (textStatus, errorThrown) {
 			var toastHTML = '<span>' + textStatus.responseJSON.error +
 				'</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'red lighten-1'
+			});
+		}
+	});
+}
+
+/** 
+ * To upload pdf
+ */
+function uploadPDF() {	
+	var form = $('#upload-form')[0];
+    var data = new FormData(form);
+    
+	/* call to upload api */
+	$.ajax({
+		type: "POST",
+        enctype: 'multipart/form-data',
+        url: "/uploadPdf",
+        data: data,
+        processData: false, 
+        contentType: false,
+        cache: false,
+		cache: false,
+		timeout: 600000,
+		success: function (data) {
+			$('#upload-form').trigger("reset");				
+			$('#courses-container').show().siblings().hide();
+			var toastHTML = '<span>' + data.success + '</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'teal lighten-1'
+			});
+		},
+		error: function (textStatus, errorThrown) {
+			var toastHTML = '<span>' + textStatus.responseJSON.error +
+			'</span>';
 			M.toast({
 				html: toastHTML,
 				classes: 'red lighten-1'
@@ -375,7 +442,7 @@ function downloadPdf() {
  *
  * @param adobeDCView
  */
-function handleEventsOnPDF(adobeDCView) {
+function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 	const userInfo = getUserInfoFromSessionStorage();
 	var totalPages = 0;
 	var fileName = '';
@@ -383,6 +450,8 @@ function handleEventsOnPDF(adobeDCView) {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
 				fileName = e.data.fileName;
+				// fetch id for file
+				// addOldCommentsToPreview(previewFilePromise, id);
 				if(isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has opened ' + fileName, {
 						'event_category': 'DOCUMENT_OPEN',
@@ -438,7 +507,7 @@ function handleEventsOnPDF(adobeDCView) {
 					});					
 				}				
 				break;
-			case 'ANNOTATION_ADDED':
+			case 'ANNOTATION_ADDED':				
 				const comment = e.data.bodyValue;
 				const motivation = e.data.motivation;				
 				
@@ -465,6 +534,24 @@ function handleEventsOnPDF(adobeDCView) {
 						'event_label': 'REPLIED_TO_COMMENT'
 					});
 				}
+				break;
+			case 'ANNOTATION_DELETED':
+				alert('ANNOTATION_DELETED');								
+				if(isStudent(userInfo)) {
+					gtag('event', userInfo.firstName + ' has deleted comment from assignment ' + fileName, {
+						'event_category': 'COMMENT_DELETED',
+						'event_label': 'COMMENT_DELETED'
+					});
+				}								
+				break;
+			case 'ANNOTATION_UPDATED':
+				alert('ANNOTATION_UPDATED');						
+				if(isStudent(userInfo)) {
+					gtag('event', userInfo.firstName + ' has updated comment on ' + fileName, {
+						'event_category': 'COMMENT_UPDATED',
+						'event_label': 'COMMENT_UPDATED'
+					});
+				}								
 				break;
 		}
 	}, {

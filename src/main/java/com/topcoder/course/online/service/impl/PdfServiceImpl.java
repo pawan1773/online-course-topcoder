@@ -9,13 +9,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.adobe.platform.operation.ExecutionContext;
 import com.adobe.platform.operation.auth.Credentials;
@@ -26,11 +31,16 @@ import com.adobe.platform.operation.io.FileRef;
 import com.adobe.platform.operation.pdfops.CreatePDFOperation;
 import com.adobe.platform.operation.pdfops.options.createpdf.CreatePDFOptions;
 import com.adobe.platform.operation.pdfops.options.createpdf.PageLayout;
+import com.topcoder.course.online.entity.CourseFile;
 import com.topcoder.course.online.model.request.GeneratePdfRequestModel;
-import com.topcoder.course.online.service.GeneratePdfService;
+import com.topcoder.course.online.repository.CourseFileRepository;
+import com.topcoder.course.online.service.PdfService;
 
 @Service
-public class GeneratePdfServiceImpl implements GeneratePdfService {
+public class PdfServiceImpl implements PdfService {
+
+	@Autowired
+	private CourseFileRepository courseFileRepository;
 
 	/**
 	 * <p>
@@ -89,7 +99,7 @@ public class GeneratePdfServiceImpl implements GeneratePdfService {
 			byte fileData[] = new byte[(int) pdfFile.length()];
 			pdfFis.read(fileData);
 			final String encodedFile = Base64.getEncoder().encodeToString(fileData);
-	
+
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
 			map.put("success", "Downloading started.");
@@ -144,5 +154,70 @@ public class GeneratePdfServiceImpl implements GeneratePdfService {
 				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(targetStringLength)
 				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 		return generatedString;
+	}
+
+	/**
+	 * <p>
+	 * To upload file.
+	 * </p>
+	 * 
+	 * @param fileLinkName
+	 * @param courseCategory
+	 * @param uploadfile
+	 * @return {@linkplain Map}
+	 */
+	@Override
+	public Map<String, Object> uploadPdf(final String fileLinkName, final String courseCategory,
+			final MultipartFile uploadfile) {
+		String fileLocation = "/pdf/";
+		if ("MS Office".equalsIgnoreCase(courseCategory)) {
+			fileLocation = fileLocation + "ms-office/";
+		} else if ("Programming".equalsIgnoreCase(courseCategory)) {
+			fileLocation = fileLocation + "programming/";
+		} else {
+			fileLocation = fileLocation + "web-designing/";
+		}
+		final Map<String, Object> map = new HashMap<>(4);
+		try {
+			Optional<CourseFile> oCourseFile = this.courseFileRepository
+					.findByFileNameAndCourseCategory(uploadfile.getOriginalFilename(), courseCategory);
+
+			
+			if (oCourseFile.isPresent()) {
+				map.put("status", HttpStatus.BAD_REQUEST.value());
+				map.put("statusMessage", HttpStatus.BAD_REQUEST.name());
+				map.put("error", "File already exists. Rename and upload it.");
+				return map;
+			}
+
+			final CourseFile courseFile = new CourseFile();
+			courseFile.setId(UUID.randomUUID().toString());
+			courseFile.setFileLocation(fileLocation);
+			courseFile.setFileName(uploadfile.getOriginalFilename());
+			courseFile.setCourseCategory(courseCategory);
+			courseFile.setFileLinkName(fileLinkName);
+
+			this.courseFileRepository.save(courseFile);
+
+			Path path = Paths.get("src/main/resources/static" + fileLocation, uploadfile.getOriginalFilename());
+
+			Files.write(path, uploadfile.getBytes());
+
+			map.put("status", HttpStatus.OK.value());
+			map.put("statusMessage", HttpStatus.OK.name());
+			map.put("success", "File uploaded.");
+			return map;
+		} catch (Exception e) {
+			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			map.put("statusMessage", HttpStatus.INTERNAL_SERVER_ERROR.name());
+			map.put("error", "Upload error. Please try again.");
+			e.printStackTrace();
+			return map;
+		}
+	}
+
+	@Override
+	public List<CourseFile> findByCourseCategory(String courseCategory) {
+		return this.courseFileRepository.findByCourseCategory(courseCategory);
 	}
 }

@@ -38,6 +38,11 @@
 			<div th:replace="login :: login"></div>
 		</div>
 		<!-- login-form container: end -->
+		<!-- upload-pdf-form container: start -->
+		<div id="upload-pdf-form-container" class="row center hidden">
+			<div th:replace="upload :: upload"></div>
+		</div>
+		<!-- upload-pdf-form container: end -->
 		<!-- password-recovery-form container: start -->
 		<div id="password-recovery-form-container"
 			class="row center without-session hidden">
@@ -59,13 +64,14 @@
 	<div class="progress hidden row" style="width: 100px">
 		<div class="indeterminate"></div>
 	</div>
-	
+
 	<!-- content container container: start -->
 	<script async
 		src="https://www.googletagmanager.com/gtag/js?id=UA-174166651-1"></script>
 	<script type="text/javascript" src="/js/analytics.js"></script>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+	<script type="text/javascript" src="/js/apis.js"></script>
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 	<script type="text/javascript" src="/js/whiteboard.js"></script>
