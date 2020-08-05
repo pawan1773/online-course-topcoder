@@ -92,7 +92,7 @@ public class GeneratePdfServiceImpl implements GeneratePdfService {
 	
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
-			map.put("success", "File link generated");
+			map.put("success", "Downloading started.");
 			map.put("encodedFile", encodedFile);
 
 			pdfFis.close();

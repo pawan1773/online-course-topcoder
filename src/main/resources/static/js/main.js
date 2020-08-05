@@ -344,9 +344,16 @@ function downloadPdf() {
 		success: function (data) {
 			const linkSource = 'data:application/pdf;base64,' + data.encodedFile;
 		    const downloadLink = document.createElement("a");
-		    downloadLink.href = linkSource;
 		    downloadLink.download = "notes.pdf";
-		    downloadLink.click();
+		    downloadLink.target = "_blank";
+		    downloadLink.href = linkSource;	
+		    document.body.appendChild(downloadLink);
+		    
+		    setTimeout(function() {
+		    	downloadLink.click();
+		    	document.body.removeChild(downloadLink);
+		    }, 500);		    
+		    
 		    var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
 				html: toastHTML,
