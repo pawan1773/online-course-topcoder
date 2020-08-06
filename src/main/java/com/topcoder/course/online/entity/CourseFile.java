@@ -28,7 +28,7 @@ public class CourseFile implements Serializable {
 	private String id;
 
 	@Lob
-	@Basic(fetch=FetchType.EAGER)
+	@Basic(fetch = FetchType.EAGER)
 	@Column(name = "content", length = 16000000)
 	private byte[] content;
 
@@ -40,6 +40,15 @@ public class CourseFile implements Serializable {
 
 	@Column(name = "file_link_name", length = 30)
 	private String fileLinkName;
+
+	public CourseFile(String id, String fileLinkName) {
+		super();
+		this.id = id;
+		this.fileLinkName = fileLinkName;
+	}
+
+	public CourseFile() {
+	}
 
 	public String getId() {
 		return id;
@@ -79,5 +88,5 @@ public class CourseFile implements Serializable {
 
 	public void setContent(byte[] content) {
 		this.content = content;
-	}	
+	}
 }

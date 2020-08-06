@@ -11,7 +11,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -106,6 +105,8 @@ public class PdfServiceImpl implements PdfService {
 			map.put("encodedFile", encodedFile);
 
 			pdfFis.close();
+			
+			Files.delete(fileToDeletePath);
 			return map;
 		} catch (final ServiceApiException | IOException | SdkException | ServiceUsageException ex) {
 			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -169,9 +170,8 @@ public class PdfServiceImpl implements PdfService {
 	@Override
 	public Map<String, Object> uploadPdf(final String fileLinkName, final String courseCategory,
 			final MultipartFile uploadfile) {
-		final Map<String, Object> map = new HashMap<>(4);
+		final Map<String, Object> map = new HashMap<>(3);
 		try {
-			
 			final CourseFile courseFile = new CourseFile();
 			courseFile.setId(UUID.randomUUID().toString());
 			courseFile.setContent(uploadfile.getBytes());
@@ -180,7 +180,7 @@ public class PdfServiceImpl implements PdfService {
 			courseFile.setFileLinkName(fileLinkName);
 
 			this.courseFileRepository.save(courseFile);
-			
+
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
 			map.put("success", "File uploaded.");
@@ -197,5 +197,10 @@ public class PdfServiceImpl implements PdfService {
 	@Override
 	public List<CourseFile> findByCourseCategory(String courseCategory) {
 		return this.courseFileRepository.findByCourseCategory(courseCategory);
+	}
+
+	@Override
+	public CourseFile findByFileId(final String id) {
+		return this.courseFileRepository.findById(id).get();
 	}
 }

@@ -1,7 +1,7 @@
 /* wait for document to get ready */
 $(document).ready(function () {
 	const userInfo = getUserInfoFromSessionStorage();
-	
+
 	/* to bypass login if user is already logged in */
 	if (userInfo.firstName != null) {
 		$('.without-session').hide();
@@ -9,15 +9,15 @@ $(document).ready(function () {
 			'Hello, ' + sessionStorage.getItem('firstName'));
 		$('.with-session').show();
 		$('#courses-container').show();
-		
-		if(userInfo.role === 'Student') {
+
+		if (userInfo.role === 'Student') {
 			$('.upload-li').hide();
 		}
 	}
 
 	/* activate materialize side nav in mobile view */
 	$('.sidenav').sidenav();
-	
+
 	/* activate materialize select */
 	$('select').formSelect();
 
@@ -33,16 +33,16 @@ $(document).ready(function () {
 
 	/* to clear session storage on logout */
 	$('.logout-link').click(function () {
-				
+
 		/* send student session time to gtag */
-		if(isStudent(userInfo)) {
+		if (isStudent(userInfo)) {
 			const sessionTime = new Date() - Date.parse(sessionStorage.getItem("loggedInTime"));
 			gtag('event', userInfo.firstName + ' has spent ' + sessionTime + ' milliseconds on application', {
 				'event_category': 'LOGGED_IN_PERIOD',
 				'event_label': 'LOGGED_IN_PERIOD'
-			});				
-		}	
-		
+			});
+		}
+
 		sessionStorage.clear();
 		$('.without-session').show();
 		$('.with-session').hide();
@@ -61,11 +61,9 @@ $(document).ready(function () {
 		$('form').trigger("reset");
 		$('#login-form-container').show().siblings().hide();
 	});
-	
+
 	$('.uploadpdf-link').click(function () {
-		$('#login-form').trigger("reset");
-		$('#register-form').trigger("reset");
-		$('#recovery-form').trigger("reset");
+		$('form').trigger("reset");
 		$('#upload-pdf-form-container').show().siblings().hide();
 	});
 
@@ -76,8 +74,7 @@ $(document).ready(function () {
 
 	/* to display password recovery form */
 	$('.forgot-password-link').click(function () {
-		$('#login-form').trigger("reset");
-		$('#register-form').trigger("reset");
+		$('form').trigger("reset");
 		$('#password-recovery-form-container').show().siblings().hide();
 	});
 
@@ -92,19 +89,19 @@ $(document).ready(function () {
 		event.preventDefault();
 		loginUser();
 	});
-	
+
 	/* to change password */
 	$('#recovery-form').submit(function (event) {
 		event.preventDefault();
 		forgotPassword();
-	});	
-	
+	});
+
 	/* to change password */
 	$('#upload-form').submit(function (event) {
 		event.preventDefault();
 		uploadPDF();
-	});	
-	
+	});
+
 	/* to download pdf */
 	$('#download-pdf').click(function () {
 		downloadPdf();
@@ -113,52 +110,65 @@ $(document).ready(function () {
 	/* to show pdfs */
 	$(document).on('click', '.view-pdf', function () {
 		var clicker = $(this);
-		var courseCategory = $(this).data('course-category');		
-		$.get("/getFiles/" + courseCategory, function(data, status) {
-			var pdfListHtml = '';
-			var previewFileConfig = '';
-			var divId = 'adobe-dc-full-window';
-			var embedMode = 'FULL_WINDOW';
-			/* if view here button is clicked on card */
-			if (clicker.hasClass('list-pdf')) {
+		var courseCategory = clicker.data('course-category'); 
+		var pdfListHtml = '';
+		var previewFileConfig = '';
+		var divId = 'adobe-dc-full-window';
+		var embedMode = 'FULL_WINDOW';
+		/* if view here button is clicked on card */
+		if (clicker.hasClass('list-pdf')) {
+			$.get("/getFiles/" + courseCategory, function (data, status) {
 				$('#course-title-li').siblings().remove();
-				if(data.length > 0) {
-				for (var i = 0; i < data.length; i++) {
+				if (data.length > 0) {
+					for (var i = 0; i < data.length; i++) {
 						if (i === 0) {
-							previewFileConfig = data[i];
-							pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-course-category="' + courseCategory + '" data-file-name="' + data[i].fileName + '">' + data[i].fileLinkName + '</a></li>';
+							$.get("/getFileById/" + data[i].id, function (data, status) {
+								previewFileConfig = data;
+								if (previewFileConfig !== '' && previewFileConfig !== null) {
+									/* setup viewer configurations */
+									const viewerConfig = {
+										"defaultViewMode": "FIT_WIDTH",
+										"embedMode": embedMode,
+										"enableAnnotationAPIs": true,
+										"showLeftHandPanel": false
+									};
+
+									/* to set preview properties */
+									setPreviewFile(divId, viewerConfig, previewFileConfig);
+								}
+							});
+							pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
 						} else {
-							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-course-category="' + courseCategory + '" data-file-name="' + data[i].fileName + '">' + data[i].fileLinkName + '</a></li>';
+							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
 						}
 					}
-				$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
-				$('.emb-btn').data('file-name', previewFileConfig.fileName);
-				$('#pdf-container').show().siblings().hide();
-				$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
-				$('#adobe-dc-full-window').show().siblings().hide();
-			   } else {
-				   pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
-				   $('#pdf-container').show().siblings().hide();
-				   $('#pdf-render-container').hide();
-			   }
-				$('#course-title').text(courseCategory);
-				$('#pdf-list li:last').after(pdfListHtml);				
-				
-			} else {
-				/* if file links or embeded buttons are clicked */
-				var fileName = clicker.data('file-name');
-				for (var i = 0; i < data.length; i++) {
-					if (data[i].fileName === fileName) {
-						previewFileConfig = data[i];
-					}
+					$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
+					$('.emb-btn').data('file-name', previewFileConfig.fileName);
+					$('#pdf-container').show().siblings().hide();
+					$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
+					$('#adobe-dc-full-window').show().siblings().hide();
+				} else {
+					pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
+					$('#pdf-container').show().siblings().hide();
+					$('#pdf-render-container').hide();
 				}
-				if ($(this).hasClass('emb-btn')) {
+				$('#course-title').text(courseCategory);
+				$('#pdf-list li:last').after(pdfListHtml);
+			});
+
+		} else {
+			/* if file links or embeded buttons are clicked */
+			var fileId = clicker.data('file-id');
+
+			$.get("/getFileById/" + fileId, function (data, status) {
+				previewFileConfig = data;
+				if (clicker.hasClass('emb-btn')) {
 					$('.emb-btn').removeClass('disabled');
 					$(this).addClass('disabled');
-					embedMode = $(this).data("embed-mode");
+					embedMode = clicker.data("embed-mode");
 				} else {
-					$(this).addClass('white-text')
-					$(this).parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
+					clicker.addClass('white-text')
+					clicker.parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
 					$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
 					$('.emb-btn').data('file-name', previewFileConfig.fileName);
 					$('.emb-btn').removeClass('disabled');
@@ -173,28 +183,27 @@ $(document).ready(function () {
 					divId = 'adobe-dc-full-window';
 					$('#adobe-dc-full-window').show().siblings().hide();
 				}
-			}
 
-			if (data.length > 0) {
-			/* setup viewer configurations */
-			const viewerConfig = {
-				"defaultViewMode": "FIT_WIDTH",
-				"embedMode": embedMode,
-				"enableAnnotationAPIs": true,
-				"showLeftHandPanel": false
-			};
+				if (previewFileConfig !== '' && previewFileConfig !== null) {
+					/* setup viewer configurations */
+					const viewerConfig = {
+						"defaultViewMode": "FIT_WIDTH",
+						"embedMode": embedMode,
+						"enableAnnotationAPIs": true,
+						"showLeftHandPanel": false
+					};
 
-			/* to set preview properties */
-			setPreviewFile(divId, viewerConfig, previewFileConfig);
-		 }
-		});
-	}); 
-		
+					/* to set preview properties */
+					setPreviewFile(divId, viewerConfig, previewFileConfig);
+				}
+			});
+		}
+	});
 })
 
-/** 
- * To set preview file properties 
- *
+/**
+ * To set preview file properties
+ * 
  * @param divId
  * @param viewerConfig
  * @param previewFileConfig
@@ -228,20 +237,21 @@ function setPreviewFile(divId, viewerConfig, previewFileConfig) {
 				})
 			})
 		});
-	
-	const url = pdfUrlBasePath + previewFileConfig.fileLocation + previewFileConfig.fileName;
+
 
 	/* set file preview */
 	var reader = new FileReader();
 	var binaryString = window.atob(previewFileConfig.content);
-	    var binaryLen = binaryString.length;
-	    var bytes = new Uint8Array(binaryLen);
-	    for (var i = 0; i < binaryLen; i++) {
-	       var ascii = binaryString.charCodeAt(i);
-	       bytes[i] = ascii;
-	    }
-    var blob = new Blob([bytes], { type: 'application/pdf' });
-    var previewFilePromise = '';
+	var binaryLen = binaryString.length;
+	var bytes = new Uint8Array(binaryLen);
+	for (var i = 0; i < binaryLen; i++) {
+		var ascii = binaryString.charCodeAt(i);
+		bytes[i] = ascii;
+	}
+	var blob = new Blob([bytes], {
+		type: 'application/pdf'
+	});
+	var previewFilePromise = '';
 	reader.onloadend = function (e) {
 		var filePromise = Promise.resolve(e.target.result);
 		var previewFilePromise = adobeDCView.previewFile({
@@ -253,17 +263,17 @@ function setPreviewFile(divId, viewerConfig, previewFileConfig) {
 				id: previewFileConfig.id
 			}
 		}, viewerConfig);
-		
+
 		/* set pdf meta data in session storage */
 		setPdfMetaDataInSession(previewFilePromise);
-	 
+
 		/* to handle events on PDF */
 		handleEventsOnPDF(adobeDCView, previewFilePromise);
 	};
 	reader.readAsArrayBuffer(blob);
 }
 
-/** 
+/**
  * To login a user
  */
 function loginUser() {
@@ -294,13 +304,13 @@ function loginUser() {
 			$('#login-form').trigger("reset");
 			$('.without-session').hide();
 			$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('firstName'));
-			
-			if(data.role == 'Student') {
+
+			if (data.role == 'Student') {
 				$('.with-session').not('.upload-li').show();
 			} else {
 				$('.with-session').show();
 			}
-			
+
 			$('#courses-container').show();
 			var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
@@ -319,26 +329,26 @@ function loginUser() {
 	});
 }
 
-/** 
+/**
  * To upload pdf
  */
-function uploadPDF() {	
+function uploadPDF() {
 	var form = $('#upload-form')[0];
-    var data = new FormData(form);
-    
+	var data = new FormData(form);
+
 	/* call to upload api */
 	$.ajax({
 		type: "POST",
-        enctype: 'multipart/form-data',
-        url: "/uploadPdf",
-        data: data,
-        processData: false, 
-        contentType: false,
-        cache: false,
+		enctype: 'multipart/form-data',
+		url: "/uploadPdf",
+		data: data,
+		processData: false,
+		contentType: false,
+		cache: false,
 		cache: false,
 		timeout: 600000,
 		success: function (data) {
-			$('#upload-form').trigger("reset");				
+			$('#upload-form').trigger("reset");
 			$('#courses-container').show().siblings().hide();
 			var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
@@ -347,9 +357,9 @@ function uploadPDF() {
 			});
 		},
 		error: function (textStatus, errorThrown) {
-			$('#upload-form').trigger("reset");	
+			$('#upload-form').trigger("reset");
 			var toastHTML = '<span>' + textStatus.responseJSON.error +
-			'</span>';
+				'</span>';
 			M.toast({
 				html: toastHTML,
 				classes: 'red lighten-1'
@@ -358,7 +368,7 @@ function uploadPDF() {
 	});
 }
 
-/** 
+/**
  * To register a user
  */
 function registerUser() {
@@ -408,7 +418,7 @@ function registerUser() {
 	});
 }
 
-/** 
+/**
  * To download pdf
  */
 function downloadPdf() {
@@ -429,24 +439,24 @@ function downloadPdf() {
 		timeout: 600000,
 		success: function (data) {
 			const linkSource = 'data:application/pdf;base64,' + data.encodedFile;
-		    const downloadLink = document.createElement("a");
-		    downloadLink.download = "notes.pdf";
-		    downloadLink.target = "_blank";
-		    downloadLink.href = linkSource;	
-		    document.body.appendChild(downloadLink);
-		    
-		    setTimeout(function() {
-		    	downloadLink.click();
-		    	document.body.removeChild(downloadLink);
-		    }, 500);		    
-		    
-		    var toastHTML = '<span>' + data.success + '</span>';
+			const downloadLink = document.createElement("a");
+			downloadLink.download = "notes.pdf";
+			downloadLink.target = "_blank";
+			downloadLink.href = linkSource;
+			document.body.appendChild(downloadLink);
+
+			setTimeout(function () {
+				downloadLink.click();
+				document.body.removeChild(downloadLink);
+			}, 500);
+
+			var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
 				html: toastHTML,
 				classes: 'teal lighten-1'
 			});
 		},
-		error: function (textStatus, errorThrown) {			
+		error: function (textStatus, errorThrown) {
 			var toastHTML = '<span>Some error occured. Please try again.</span>';
 			M.toast({
 				html: toastHTML,
@@ -456,9 +466,10 @@ function downloadPdf() {
 	});
 }
 
-/** 
- * To listen to file events, perform required actions and send it to google analytics 
- *
+/**
+ * To listen to file events, perform required actions and send it to google
+ * analytics
+ * 
  * @param adobeDCView
  */
 function handleEventsOnPDF(adobeDCView, previewFilePromise) {
@@ -471,24 +482,24 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 				fileName = e.data.fileName;
 				// fetch id for file
 				// addOldCommentsToPreview(previewFilePromise, id);
-				if(isStudent(userInfo)) {
+				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has opened ' + fileName, {
 						'event_category': 'DOCUMENT_OPEN',
 						'event_label': 'DOCUMENT_OPEN'
 					});
 				}
 				break;
-			case 'PAGE_VIEW':	
+			case 'PAGE_VIEW':
 				totalPages = sessionStorage.getItem("totalPages");
-				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
+				if (e.data.pageNumber == totalPages && isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + fileName, {
 						'event_category': 'SCROLLED_THROUGH',
 						'event_label': 'SCROLLED_THROUGH'
-					});					
-				}				
+					});
+				}
 				break;
 			case 'DOCUMENT_DOWNLOAD':
-				if(isStudent(userInfo)) {
+				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has downloaded ' + fileName, {
 						'event_category': 'DOCUMENT_DOWNLOAD',
 						'event_label': 'DOCUMENT_DOWNLOAD'
@@ -504,32 +515,32 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 			case 'PAGES_IN_VIEW_CHANGE':
 				var pageEnteredTime = new Date();
 				var startPage = e.data.startPage.pageNumber;
-				if(startPage != e.data.endPage.pageNumber && isStudent(userInfo)) {	
+				if (startPage != e.data.endPage.pageNumber && isStudent(userInfo)) {
 					var pageChangeTime = new Date() - pageEnteredTime;
 					gtag('event', userInfo.firstName + ' has read all the content of page ' + startPage + ' of ' + fileName, {
 						'event_category': 'READ_PAGE_CONTENT',
 						'event_label': 'READ_PAGE_CONTENT'
-					});		
-					
+					});
+
 					gtag('event', userInfo.firstName + ' has spent ' + pageChangeTime + ' milliseconds on page ' + startPage, {
 						'event_category': 'PAGE_TIME',
 						'event_label': 'PAGE_TIME'
 					});
-				} 
+				}
 				break;
-			case 'CURRENT_ACTIVE_PAGE':	
+			case 'CURRENT_ACTIVE_PAGE':
 				totalPages = sessionStorage.getItem("totalPages");
-				if(e.data.pageNumber == totalPages && isStudent(userInfo)) {									
+				if (e.data.pageNumber == totalPages && isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has scrolled through all the pages of ' + fileName, {
 						'event_category': 'SCROLLED_THROUGH',
 						'event_label': 'SCROLLED_THROUGH'
-					});					
-				}				
+					});
+				}
 				break;
-			case 'ANNOTATION_ADDED':				
+			case 'ANNOTATION_ADDED':
 				const comment = e.data.bodyValue;
-				const motivation = e.data.motivation;				
-				
+				const motivation = e.data.motivation;
+
 				/* check if assignment completed */
 				if (assignmentCompleted(userInfo, comment, motivation)) {
 					gtag('event', userInfo.firstName + ' has completed the assignment on ' + fileName, {
@@ -537,17 +548,17 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 						'event_label': 'ASSIGNMENT_COMPLETED'
 					});
 				}
-                
+
 				/* check if student has commented */
-				if(isStudent(userInfo) && motivation === 'commenting') {
+				if (isStudent(userInfo) && motivation === 'commenting') {
 					gtag('event', userInfo.firstName + ' has commented on ' + fileName, {
 						'event_category': 'COMMENT_ADDED',
 						'event_label': 'COMMENT_ADDED'
 					});
 				}
-				
+
 				/* check if student has replied to comment */
-				if(isStudent(userInfo) && motivation === 'replying') {
+				if (isStudent(userInfo) && motivation === 'replying') {
 					gtag('event', userInfo.firstName + ' has replied on ' + fileName, {
 						'event_category': 'REPLIED_TO_COMMENT',
 						'event_label': 'REPLIED_TO_COMMENT'
@@ -555,32 +566,32 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 				}
 				break;
 			case 'ANNOTATION_DELETED':
-				alert('ANNOTATION_DELETED');								
-				if(isStudent(userInfo)) {
+				alert('ANNOTATION_DELETED');
+				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has deleted comment from assignment ' + fileName, {
 						'event_category': 'COMMENT_DELETED',
 						'event_label': 'COMMENT_DELETED'
 					});
-				}								
+				}
 				break;
 			case 'ANNOTATION_UPDATED':
-				alert('ANNOTATION_UPDATED');						
-				if(isStudent(userInfo)) {
+				alert('ANNOTATION_UPDATED');
+				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has updated comment on ' + fileName, {
 						'event_category': 'COMMENT_UPDATED',
 						'event_label': 'COMMENT_UPDATED'
 					});
-				}								
+				}
 				break;
 		}
 	}, {
 		enableAnnotationEvents: true,
-		enableFilePreviewEvents:true,
+		enableFilePreviewEvents: true,
 		enablePDFAnalytics: true
 	});
 }
 
-/** 
+/**
  * To reset password
  */
 function forgotPassword() {
@@ -634,7 +645,7 @@ function isStudent(userInfo) {
 	return userInfo.role == 'Student';
 }
 
-/** 
+/**
  * To check assignment is completed
  * 
  * @param userInfo

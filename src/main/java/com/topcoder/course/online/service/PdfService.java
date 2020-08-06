@@ -30,7 +30,10 @@ public interface PdfService {
 	 * @param uploadfile
 	 * @return {@linkplain Map}
 	 */
-	Map<String, Object> uploadPdf(final String fileLinkName, final String courseCategory, final MultipartFile uploadfile);
-	
+	Map<String, Object> uploadPdf(final String fileLinkName, final String courseCategory,
+			final MultipartFile uploadfile);
+
 	List<CourseFile> findByCourseCategory(final String courseCategory);
+
+	CourseFile findByFileId(final String id);
 }

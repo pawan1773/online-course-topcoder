@@ -60,10 +60,10 @@ public class PdfController {
 	public ResponseEntity<?> uploadFile(@RequestParam("fileLinkName") String fileLinkName,
 			@RequestParam("courseCategory") String courseCategory, @RequestParam("file") MultipartFile uploadfile) {
 		final Map<String, Object> body = this.pdfServiceImpl.uploadPdf(fileLinkName, courseCategory, uploadfile);
-		
+
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
-	
+
 	/**
 	 * <p>
 	 * To get files by category.
@@ -74,6 +74,19 @@ public class PdfController {
 	 */
 	@GetMapping(value = "/getFiles/{courseCategory}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CourseFile>> getFiles(@PathVariable("courseCategory") String courseCategory) {
-		 return ResponseEntity.ok(this.pdfServiceImpl.findByCourseCategory(courseCategory));
+		return ResponseEntity.ok(this.pdfServiceImpl.findByCourseCategory(courseCategory));
+	}
+
+	/**
+	 * <p>
+	 * To get file by id.
+	 * </p>
+	 * 
+	 * @param courseCategory
+	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 */
+	@GetMapping(value = "/getFileById/{fileId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CourseFile> findByFileId(@PathVariable("fileId") String fileId) {
+		return ResponseEntity.ok(this.pdfServiceImpl.findByFileId(fileId));
 	}
 }
