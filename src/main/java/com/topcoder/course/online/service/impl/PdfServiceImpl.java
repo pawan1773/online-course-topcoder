@@ -106,7 +106,6 @@ public class PdfServiceImpl implements PdfService {
 
 			pdfFis.close();
 			
-			Files.delete(fileToDeletePath);
 			return map;
 		} catch (final ServiceApiException | IOException | SdkException | ServiceUsageException ex) {
 			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
