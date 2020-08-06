@@ -1,5 +1,5 @@
 /* wait for document to get ready */
-$(document).ready(function () {
+$(document).ready(function () {	
 	const userInfo = getUserInfoFromSessionStorage();
 
 	/* to bypass login if user is already logged in */
@@ -21,6 +21,12 @@ $(document).ready(function () {
 	/* activate materialize select */
 	$('select').formSelect();
 
+	/* to make api calls synchronous */
+	jQuery.ajaxSetup({
+		async: false,
+		cache: true
+	});
+	
 	/* to start progress bar */
 	$(document).ajaxStart(function () {
 		$('.progress').show();
@@ -140,9 +146,15 @@ $(document).ready(function () {
 				$('#pdf-render-container').hide();
 			}
 			
-			$.get("/getFileById/" + filesData[0].id, function (data, status) {
-				previewFileConfig = data;
-			});	
+			if (filesData.length > 0) {
+				jQuery.ajaxSetup({
+					async: false,
+					cache: true
+				});
+				$.get("/getFileById/" + filesData[0].id, function (data, status) {
+					previewFileConfig = data;
+				});					
+			}
 			
 			$('#course-title').text(courseCategory);
 			$('#pdf-list li:last').after(pdfListHtml);
@@ -200,8 +212,6 @@ $(document).ready(function () {
 			/* to set preview properties */
 			setPreviewFile(divId, viewerConfig, previewFileConfig);
 		}
-
-
 	});
 });
 

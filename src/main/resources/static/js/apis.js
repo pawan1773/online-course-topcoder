@@ -1,11 +1,11 @@
-function addComment(previewFilePromise, sourceId) {
+function addAnnotations(previewFilePromise, sourceId) {
 	previewFilePromise.then(function (adobeViewer) {
         adobeViewer.getAnnotationManager().then(function (annotationManager) {
-        	getAnnotations
+        	// get annotations from backend
             /* API to add annotations */
             annotationManager.addAnnotations([])
                 .then(function () {             
-                    console.log("Annotations added through API successfully")
+                    console.log("Annotations added.")
                 })
                 .catch(function (error) {
                     console.log(error)
