@@ -2,9 +2,12 @@ package com.topcoder.course.online.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 /**
@@ -24,8 +27,10 @@ public class CourseFile implements Serializable {
 	@Column(name = "id")
 	private String id;
 
-	@Column(name = "file_location", length = 100)
-	private String fileLocation;
+	@Lob
+	@Basic(fetch=FetchType.EAGER)
+	@Column(name = "content", length = 16000000)
+	private byte[] content;
 
 	@Column(name = "file_name", length = 50)
 	private String fileName;
@@ -42,14 +47,6 @@ public class CourseFile implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getFileLocation() {
-		return fileLocation;
-	}
-
-	public void setFileLocation(String fileLocation) {
-		this.fileLocation = fileLocation;
 	}
 
 	public String getFileName() {
@@ -75,4 +72,12 @@ public class CourseFile implements Serializable {
 	public void setFileLinkName(String fileLinkName) {
 		this.fileLinkName = fileLinkName;
 	}
+
+	public byte[] getContent() {
+		return content;
+	}
+
+	public void setContent(byte[] content) {
+		this.content = content;
+	}	
 }

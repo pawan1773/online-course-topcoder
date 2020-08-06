@@ -169,40 +169,18 @@ public class PdfServiceImpl implements PdfService {
 	@Override
 	public Map<String, Object> uploadPdf(final String fileLinkName, final String courseCategory,
 			final MultipartFile uploadfile) {
-		String fileLocation = "/pdf/";
-		if ("MS Office".equalsIgnoreCase(courseCategory)) {
-			fileLocation = fileLocation + "ms-office/";
-		} else if ("Programming".equalsIgnoreCase(courseCategory)) {
-			fileLocation = fileLocation + "programming/";
-		} else {
-			fileLocation = fileLocation + "web-designing/";
-		}
 		final Map<String, Object> map = new HashMap<>(4);
 		try {
-			Optional<CourseFile> oCourseFile = this.courseFileRepository
-					.findByFileNameAndCourseCategory(uploadfile.getOriginalFilename(), courseCategory);
-
 			
-			if (oCourseFile.isPresent()) {
-				map.put("status", HttpStatus.BAD_REQUEST.value());
-				map.put("statusMessage", HttpStatus.BAD_REQUEST.name());
-				map.put("error", "File already exists. Rename and upload it.");
-				return map;
-			}
-
 			final CourseFile courseFile = new CourseFile();
 			courseFile.setId(UUID.randomUUID().toString());
-			courseFile.setFileLocation(fileLocation);
+			courseFile.setContent(uploadfile.getBytes());
 			courseFile.setFileName(uploadfile.getOriginalFilename());
 			courseFile.setCourseCategory(courseCategory);
 			courseFile.setFileLinkName(fileLinkName);
 
 			this.courseFileRepository.save(courseFile);
-
-			Path path = Paths.get("src/main/resources/static" + fileLocation, uploadfile.getOriginalFilename());
-
-			Files.write(path, uploadfile.getBytes());
-
+			
 			map.put("status", HttpStatus.OK.value());
 			map.put("statusMessage", HttpStatus.OK.name());
 			map.put("success", "File uploaded.");
