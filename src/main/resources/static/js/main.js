@@ -109,97 +109,257 @@ $(document).ready(function () {
 
 	/* to show pdfs */
 	$(document).on('click', '.view-pdf', function () {
+		jQuery.ajaxSetup({
+			async: false
+		});
 		var clicker = $(this);
-		var courseCategory = clicker.data('course-category'); 
+		var courseCategory = clicker.data('course-category');
 		var pdfListHtml = '';
 		var previewFileConfig = '';
 		var divId = 'adobe-dc-full-window';
 		var embedMode = 'FULL_WINDOW';
 		/* if view here button is clicked on card */
 		if (clicker.hasClass('list-pdf')) {
+			var filesData = '';
 			$.get("/getFiles/" + courseCategory, function (data, status) {
-				$('#course-title-li').siblings().remove();
-				if (data.length > 0) {
-					for (var i = 0; i < data.length; i++) {
-						if (i === 0) {
-							$.get("/getFileById/" + data[i].id, function (data, status) {
-								previewFileConfig = data;
-								if (previewFileConfig !== '' && previewFileConfig !== null) {
-									/* setup viewer configurations */
-									const viewerConfig = {
-										"defaultViewMode": "FIT_WIDTH",
-										"embedMode": embedMode,
-										"enableAnnotationAPIs": true,
-										"showLeftHandPanel": false
-									};
-
-									/* to set preview properties */
-									setPreviewFile(divId, viewerConfig, previewFileConfig);
-								}
-							});
-							pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
-						} else {
-							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
-						}
-					}
-					$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
-					$('.emb-btn').data('file-name', previewFileConfig.fileName);
-					$('#pdf-container').show().siblings().hide();
-					$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
-					$('#adobe-dc-full-window').show().siblings().hide();
-				} else {
-					pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
-					$('#pdf-container').show().siblings().hide();
-					$('#pdf-render-container').hide();
-				}
-				$('#course-title').text(courseCategory);
-				$('#pdf-list li:last').after(pdfListHtml);
+				filesData = data;
 			});
 
+			$('#course-title-li').siblings().remove();
+			if (filesData.length > 0) {
+				for (var i = 0; i < filesData.length; i++) {
+					if (i === 0) {						
+						pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-file-id="' + filesData[i].id + '">' + filesData[i].fileLinkName + '</a></li>';
+					} else {
+						pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + filesData[i].id + '">' + filesData[i].fileLinkName + '</a></li>';
+					}
+				}
+			} else {
+				pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
+				$('#pdf-container').show().siblings().hide();
+				$('#pdf-render-container').hide();
+			}
+			
+			$.get("/getFileById/" + filesData[0].id, function (data, status) {
+				previewFileConfig = data;
+			});	
+			
+			$('#course-title').text(courseCategory);
+			$('#pdf-list li:last').after(pdfListHtml);
+			$('#pdf-container').show().siblings().hide();							
+			$('.emb-btn').data('file-id', previewFileConfig.id);
+			$('#pdf-container').show().siblings().hide();
+			$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
+			$('#adobe-dc-full-window').show().siblings().hide();
+
 		} else {
-			/* if file links or embeded buttons are clicked */
+			/* if file links or embedded buttons are clicked */
 			var fileId = clicker.data('file-id');
+			jQuery.ajaxSetup({
+				async: false,
+				cache: true
+			});
 
 			$.get("/getFileById/" + fileId, function (data, status) {
 				previewFileConfig = data;
-				if (clicker.hasClass('emb-btn')) {
-					$('.emb-btn').removeClass('disabled');
-					$(this).addClass('disabled');
-					embedMode = clicker.data("embed-mode");
-				} else {
-					clicker.addClass('white-text')
-					clicker.parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
-					$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
-					$('.emb-btn').data('file-name', previewFileConfig.fileName);
-					$('.emb-btn').removeClass('disabled');
-					$('#btn-full').addClass('disabled');
-				}
-
-				/* set divId for viewer */
-				if (embedMode === 'SIZED_CONTAINER') {
-					divId = 'adobe-dc-sized-container';
-					$('#adobe-dc-sized-container').show().siblings().hide();
-				} else {
-					divId = 'adobe-dc-full-window';
-					$('#adobe-dc-full-window').show().siblings().hide();
-				}
-
-				if (previewFileConfig !== '' && previewFileConfig !== null) {
-					/* setup viewer configurations */
-					const viewerConfig = {
-						"defaultViewMode": "FIT_WIDTH",
-						"embedMode": embedMode,
-						"enableAnnotationAPIs": true,
-						"showLeftHandPanel": false
-					};
-
-					/* to set preview properties */
-					setPreviewFile(divId, viewerConfig, previewFileConfig);
-				}
 			});
+	
+			if (clicker.hasClass('emb-btn')) {
+				$('.emb-btn').removeClass('disabled');
+				clicker.addClass('disabled');
+				embedMode = clicker.data("embed-mode");
+			} else {
+				clicker.addClass('white-text')
+				clicker.parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
+				$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
+				$('.emb-btn').data('file-name', previewFileConfig.fileName);
+				$('.emb-btn').removeClass('disabled');
+				$('#btn-full').addClass('disabled');
+			}
+
+			/* set divId for viewer */
+			if (embedMode === 'SIZED_CONTAINER') {
+				divId = 'adobe-dc-sized-container';
+				$('#adobe-dc-sized-container').show().siblings().hide();
+			} else {
+				divId = 'adobe-dc-full-window';
+				$('#adobe-dc-full-window').show().siblings().hide();
+			}
+
+		}
+
+		if (previewFileConfig !== '' && previewFileConfig != null) {
+			/* setup viewer configurations */
+			const viewerConfig = {
+				"defaultViewMode": "FIT_WIDTH",
+				"embedMode": embedMode,
+				"enableAnnotationAPIs": true,
+				"showLeftHandPanel": false
+			};
+
+			/* to set preview properties */
+			setPreviewFile(divId, viewerConfig, previewFileConfig);
+		}
+
+
+	});
+});
+
+/**
+ * Registers a User
+ * 
+ */
+function registerUser() {
+	/* set post data */
+	var registerRequestModel = {
+		"firstName": $('#first_name').val(),
+		"lastName": $('#last_name').val(),
+		"email": $('#email').val(),
+		"password": $('#password').val(),
+		"recoveryKey": $('#recovery').val(),
+		"role": $('input[name="role-radio"]:checked').val()
+	}
+
+	/* call to register user api */
+	$.ajax({
+		type: "POST",
+		contentType: "application/json",
+		url: "/register",
+		data: JSON.stringify(registerRequestModel),
+		dataType: 'json',
+		cache: false,
+		timeout: 60000,
+		async: false,
+		success: function (data) {
+			$('form').trigger("reset");
+			$('#login-form-container').show().siblings().hide();
+			var toastHTML = '<span>' + data.success + '</span>';
+
+			M.toast({
+				html: toastHTML,
+				classes: 'teal lighten-1'
+			});
+
+			console.log(data.success);
+		},
+		error: function (textStatus, errorThrown) {
+			var toastHTML = '<span>' + textStatus.responseJSON.error +
+				'</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'red lighten-1'
+			});
+
+			console.error(textStatus.responseJSON.error);
 		}
 	});
-})
+}
+
+/**
+ * Login a User
+ * 
+ */
+function loginUser() {
+	/* set post data */
+	var loginRequestModel = {
+		"email": $("#login-email").val(),
+		"password": $("#login-password").val()
+	}
+
+	/* call to login api */
+	$.ajax({
+		type: "POST",
+		contentType: "application/json",
+		url: "/login",
+		data: JSON.stringify(loginRequestModel),
+		dataType: 'json',
+		cache: false,
+		async: false,
+		timeout: 60000,
+		success: function (data) {
+			sessionStorage.setItem("loggedInTime", new Date());
+			sessionStorage.setItem('firstName', data.firstName);
+			sessionStorage.setItem('lastName', data.lastName);
+			sessionStorage.setItem('email', data.email);
+			sessionStorage.setItem('role', data.role);
+			$('form').trigger("reset");
+			$('.without-session').hide();
+			$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('firstName'));
+
+			if (data.role == 'Student') {
+				$('.with-session').not('.upload-li').show();
+			} else {
+				$('.with-session').show();
+			}
+
+			$('#courses-container').show();
+			var toastHTML = '<span>' + data.success + '</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'teal lighten-1'
+			});
+
+			console.log(data.success);
+		},
+		error: function (textStatus, errorThrown) {
+			var toastHTML = '<span>' + textStatus.responseJSON.error +
+				'</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'red lighten-1'
+			});
+
+			console.error(textStatus.responseJSON.error);
+		}
+	});
+}
+
+/**
+ * Reset Password
+ * 
+ */
+function forgotPassword() {
+	/* set post data */
+	var changePasswordRequestModel = {
+		"email": $("#recovery-email").val(),
+		"password": $("#recovery-password").val(),
+		"key": $("#recovery-key").val()
+	}
+
+	/* call to change password api */
+	$.ajax({
+		type: "POST",
+		contentType: "application/json",
+		url: "/changePassword",
+		data: JSON.stringify(changePasswordRequestModel),
+		dataType: 'json',
+		cache: false,
+		async: false,
+		timeout: 600000,
+		success: function (data) {
+			$('form').trigger("reset");
+			$('#login-form-container').show().siblings().hide();
+			var toastHTML = '<span>' + data.success + '</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'teal lighten-1'
+			});
+
+			console.log(data.success);
+		},
+		error: function (textStatus, errorThrown) {
+			var toastHTML = '<span>' + textStatus.responseJSON.error +
+				'</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'red lighten-1'
+			});
+
+			console.error(textStatus.responseJSON.error);
+		}
+	});
+}
+
 
 /**
  * To set preview file properties
@@ -273,61 +433,6 @@ function setPreviewFile(divId, viewerConfig, previewFileConfig) {
 	reader.readAsArrayBuffer(blob);
 }
 
-/**
- * To login a user
- */
-function loginUser() {
-	var email = $("#login-email").val();
-	var password = $("#login-password").val();
-
-	/* request body for POST request */
-	var loginRequestModel = {
-		"email": email,
-		"password": password
-	}
-
-	/* call to login api */
-	$.ajax({
-		type: "POST",
-		contentType: "application/json",
-		url: "/login",
-		data: JSON.stringify(loginRequestModel),
-		dataType: 'json',
-		cache: false,
-		timeout: 600000,
-		success: function (data) {
-			sessionStorage.setItem("loggedInTime", new Date());
-			sessionStorage.setItem('firstName', data.firstName);
-			sessionStorage.setItem('lastName', data.lastName);
-			sessionStorage.setItem('email', data.email);
-			sessionStorage.setItem('role', data.role);
-			$('#login-form').trigger("reset");
-			$('.without-session').hide();
-			$('.username-placeholder').text('Hello, ' + sessionStorage.getItem('firstName'));
-
-			if (data.role == 'Student') {
-				$('.with-session').not('.upload-li').show();
-			} else {
-				$('.with-session').show();
-			}
-
-			$('#courses-container').show();
-			var toastHTML = '<span>' + data.success + '</span>';
-			M.toast({
-				html: toastHTML,
-				classes: 'teal lighten-1'
-			});
-		},
-		error: function (textStatus, errorThrown) {
-			var toastHTML = '<span>' + textStatus.responseJSON.error +
-				'</span>';
-			M.toast({
-				html: toastHTML,
-				classes: 'red lighten-1'
-			});
-		}
-	});
-}
 
 /**
  * To upload pdf
@@ -345,7 +450,7 @@ function uploadPDF() {
 		processData: false,
 		contentType: false,
 		cache: false,
-		cache: false,
+		async: false,
 		timeout: 600000,
 		success: function (data) {
 			$('#upload-form').trigger("reset");
@@ -368,55 +473,6 @@ function uploadPDF() {
 	});
 }
 
-/**
- * To register a user
- */
-function registerUser() {
-	var firstName = $("#first_name").val();
-	var lastName = $("#last_name").val();
-	var email = $("#email").val();
-	var password = $("#password").val();
-	var recoveryKey = $("#recovery").val();
-	var role = $("input[name='role-radio']:checked").val();
-
-	/* request body for POST request */
-	var registerRequestModel = {
-		"firstName": firstName,
-		"lastName": lastName,
-		"email": email,
-		"password": password,
-		"recoveryKey": recoveryKey,
-		"role": role
-	}
-
-	/* call to registered api */
-	$.ajax({
-		type: "POST",
-		contentType: "application/json",
-		url: "/register",
-		data: JSON.stringify(registerRequestModel),
-		dataType: 'json',
-		cache: false,
-		timeout: 600000,
-		success: function (data) {
-			$('#login-form').trigger("reset");
-			$('#login-form-container').show().siblings().hide();
-			var toastHTML = '<span>' + data.success + '</span>';
-			M.toast({
-				html: toastHTML,
-				classes: 'teal lighten-1'
-			});
-		},
-		error: function (textStatus, errorThrown) {
-			var toastHTML = '<span>' + textStatus.responseJSON.error +
-				'</span>';
-			M.toast({
-				html: toastHTML,
-				classes: 'red lighten-1'
-			});
-		}
-	});
-}
 
 /**
  * To download pdf
@@ -566,7 +622,6 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 				}
 				break;
 			case 'ANNOTATION_DELETED':
-				alert('ANNOTATION_DELETED');
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has deleted comment from assignment ' + fileName, {
 						'event_category': 'COMMENT_DELETED',
@@ -575,7 +630,6 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 				}
 				break;
 			case 'ANNOTATION_UPDATED':
-				alert('ANNOTATION_UPDATED');
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has updated comment on ' + fileName, {
 						'event_category': 'COMMENT_UPDATED',
@@ -591,49 +645,6 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 	});
 }
 
-/**
- * To reset password
- */
-function forgotPassword() {
-	var email = $("#recovery-email").val();
-	var password = $("#recovery-password").val();
-	var key = $("#recovery-key").val();
-
-	/* request body for POST request */
-	var changePasswordRequestModel = {
-		"email": email,
-		"password": password,
-		"key": key
-	}
-
-	/* call to change password api */
-	$.ajax({
-		type: "POST",
-		contentType: "application/json",
-		url: "/changePassword",
-		data: JSON.stringify(changePasswordRequestModel),
-		dataType: 'json',
-		cache: false,
-		timeout: 600000,
-		success: function (data) {
-			$('#login-form').trigger("reset");
-			$('#login-form-container').show().siblings().hide();
-			var toastHTML = '<span>' + data.success + '</span>';
-			M.toast({
-				html: toastHTML,
-				classes: 'teal lighten-1'
-			});
-		},
-		error: function (textStatus, errorThrown) {
-			var toastHTML = '<span>' + textStatus.responseJSON.error +
-				'</span>';
-			M.toast({
-				html: toastHTML,
-				classes: 'red lighten-1'
-			});
-		}
-	});
-}
 
 /**
  * To check if user is a student

@@ -33,7 +33,7 @@ public class PdfController {
 
 	/**
 	 * <p>
-	 * To generate.
+	 * To generate pdf.
 	 * </p>
 	 * 
 	 * @param model
