@@ -20,6 +20,11 @@ $(document).ready(function () {
 
 	/* activate materialize select */
 	$('select').formSelect();
+	$(document).click(function () {
+		$('li[id^="select-options"]').on('touchend', function (e) {
+			e.stopPropagation();
+		})
+	});
 
 	/* to start progress bar */
 	$(document).ajaxStart(function () {
@@ -122,7 +127,7 @@ $(document).ready(function () {
 				if (data.length > 0) {
 					for (var i = 0; i < data.length; i++) {
 						if (i === 0) {
-							pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
+							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf white-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
 						} else {
 							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
 						}
