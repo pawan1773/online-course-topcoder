@@ -1,5 +1,5 @@
 /* wait for document to get ready */
-$(document).ready(function () {	
+$(document).ready(function () {
 	const userInfo = getUserInfoFromSessionStorage();
 
 	/* to bypass login if user is already logged in */
@@ -21,12 +21,6 @@ $(document).ready(function () {
 	/* activate materialize select */
 	$('select').formSelect();
 
-	/* to make api calls synchronous */
-	jQuery.ajaxSetup({
-		async: false,
-		cache: true
-	});
-	
 	/* to start progress bar */
 	$(document).ajaxStart(function () {
 		$('.progress').show();
@@ -102,7 +96,7 @@ $(document).ready(function () {
 		forgotPassword();
 	});
 
-	/* to change password */
+	/* to upload pdf */
 	$('#upload-form').submit(function (event) {
 		event.preventDefault();
 		uploadPDF();
@@ -113,105 +107,111 @@ $(document).ready(function () {
 		downloadPdf();
 	});
 
-	/* to show pdfs */
-	$(document).on('click', '.view-pdf', function () {
-		jQuery.ajaxSetup({
-			async: false
+	/* to view list of courses */
+	$(document).on('click', '.view-courses', function () {
+		var courseCategory = $(this).data('course-category');
+		/* call to get files list api */
+		$.ajax({
+			type: "GET",
+			url: "/getFiles/" + courseCategory,
+			dataType: 'json',
+			cache: false,
+			timeout: 60000,
+			success: function (data) {
+				var pdfListHtml = '';
+				if (data.length > 0) {
+					for (var i = 0; i < data.length; i++) {
+						if (i === 0) {
+							pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
+						} else {
+							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
+						}
+					}
+				} else {
+					pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
+				}
+
+				$('#course-title').text(courseCategory);
+				$('#pdf-list li:not(:first-child)').remove()
+				$('#pdf-list li:last').after(pdfListHtml);
+				$('#pdf-container').show().siblings().hide();
+				$('#pdf-render-container').hide();
+
+				console.log("Courses:" + JSON.stringify(data));
+			},
+			error: function (textStatus, errorThrown) {
+				var toastHTML = '<span>Something went wrong.</span>';
+				M.toast({
+					html: toastHTML,
+					classes: 'red lighten-1'
+				});
+				console.error(JSON.stringify(errorThrown));
+			}
 		});
+	});
+
+	/* to show pdf */
+	$(document).on('click', '.view-pdf', function () {
 		var clicker = $(this);
-		var courseCategory = clicker.data('course-category');
-		var pdfListHtml = '';
+		var fileId = clicker.data('file-id');
 		var previewFileConfig = '';
 		var divId = 'adobe-dc-full-window';
 		var embedMode = 'FULL_WINDOW';
-		/* if view here button is clicked on card */
-		if (clicker.hasClass('list-pdf')) {
-			var filesData = '';
-			$.get("/getFiles/" + courseCategory, function (data, status) {
-				filesData = data;
-			});
-
-			$('#course-title-li').siblings().remove();
-			if (filesData.length > 0) {
-				for (var i = 0; i < filesData.length; i++) {
-					if (i === 0) {						
-						pdfListHtml = pdfListHtml + '<li class="collection-item active"><a href="#" class="view-pdf white-text" data-file-id="' + filesData[i].id + '">' + filesData[i].fileLinkName + '</a></li>';
-					} else {
-						pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + filesData[i].id + '">' + filesData[i].fileLinkName + '</a></li>';
-					}
-				}
-			} else {
-				pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
-				$('#pdf-container').show().siblings().hide();
-				$('#pdf-render-container').hide();
-			}
-			
-			if (filesData.length > 0) {
-				jQuery.ajaxSetup({
-					async: false,
-					cache: true
-				});
-				$.get("/getFileById/" + filesData[0].id, function (data, status) {
-					previewFileConfig = data;
-				});					
-			}
-			
-			$('#course-title').text(courseCategory);
-			$('#pdf-list li:last').after(pdfListHtml);
-			$('#pdf-container').show().siblings().hide();							
-			$('.emb-btn').data('file-id', previewFileConfig.id);
-			$('#pdf-container').show().siblings().hide();
-			$('#btn-full').addClass('disabled').siblings().removeClass('disabled');
-			$('#adobe-dc-full-window').show().siblings().hide();
-
-		} else {
-			/* if file links or embedded buttons are clicked */
-			var fileId = clicker.data('file-id');
-			jQuery.ajaxSetup({
-				async: false,
-				cache: true
-			});
-
-			$.get("/getFileById/" + fileId, function (data, status) {
+		/* call to get files list api */
+		$.ajax({
+			type: "GET",
+			url: "/getFileById/" + fileId,
+			dataType: 'json',
+			cache: true,
+			timeout: 600000,
+			success: function (data) {
 				previewFileConfig = data;
-			});
-	
-			if (clicker.hasClass('emb-btn')) {
-				$('.emb-btn').removeClass('disabled');
-				clicker.addClass('disabled');
-				embedMode = clicker.data("embed-mode");
-			} else {
-				clicker.addClass('white-text')
-				clicker.parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
-				$('.emb-btn').data('course-category', previewFileConfig.courseCategory);
-				$('.emb-btn').data('file-name', previewFileConfig.fileName);
-				$('.emb-btn').removeClass('disabled');
-				$('#btn-full').addClass('disabled');
+				if (clicker.hasClass('emb-btn')) {
+					$('.emb-btn').removeClass('disabled');
+					clicker.addClass('disabled');
+					embedMode = clicker.data("embed-mode");
+				} else {
+					clicker.addClass('white-text')
+					clicker.parent().addClass('active').siblings().removeClass('active').children().removeClass('white-text').addClass('teal-text');
+					$('.emb-btn').data('file-id', previewFileConfig.id);
+					$('.emb-btn').removeClass('disabled');
+					$('#btn-full').addClass('disabled');
+				}
+
+				/* set divId for viewer */
+				if (embedMode === 'SIZED_CONTAINER') {
+					divId = 'adobe-dc-sized-container';
+					$('#adobe-dc-sized-container').show().siblings().hide();
+				} else {
+					divId = 'adobe-dc-full-window';
+					$('#adobe-dc-full-window').show().siblings().hide();
+				}
+
+				$('#pdf-render-container').show();
+				/* setup viewer configurations */
+				const viewerConfig = {
+					"defaultViewMode": "FIT_WIDTH",
+					"embedMode": embedMode,
+					"enableAnnotationAPIs": true,
+					"showLeftHandPanel": false
+				};
+
+				/* to set preview properties */
+				setPreviewFile(divId, viewerConfig, previewFileConfig);
+
+				clicker = '';
+				console.log("Total courses:" + data);
+			},
+			error: function (textStatus, errorThrown) {
+				clicker = '';
+				var toastHTML = '<span>Something went wrong.</span>';
+				M.toast({
+					html: toastHTML,
+					classes: 'red lighten-1'
+				});
+				console.error(JSON.stringify(errorThrown));
 			}
-
-			/* set divId for viewer */
-			if (embedMode === 'SIZED_CONTAINER') {
-				divId = 'adobe-dc-sized-container';
-				$('#adobe-dc-sized-container').show().siblings().hide();
-			} else {
-				divId = 'adobe-dc-full-window';
-				$('#adobe-dc-full-window').show().siblings().hide();
-			}
-
-		}
-
-		if (previewFileConfig !== '' && previewFileConfig != null) {
-			/* setup viewer configurations */
-			const viewerConfig = {
-				"defaultViewMode": "FIT_WIDTH",
-				"embedMode": embedMode,
-				"enableAnnotationAPIs": true,
-				"showLeftHandPanel": false
-			};
-
-			/* to set preview properties */
-			setPreviewFile(divId, viewerConfig, previewFileConfig);
-		}
+		});
 	});
 });
 
@@ -239,7 +239,6 @@ function registerUser() {
 		dataType: 'json',
 		cache: false,
 		timeout: 60000,
-		async: false,
 		success: function (data) {
 			$('form').trigger("reset");
 			$('#login-form-container').show().siblings().hide();
@@ -284,7 +283,6 @@ function loginUser() {
 		data: JSON.stringify(loginRequestModel),
 		dataType: 'json',
 		cache: false,
-		async: false,
 		timeout: 60000,
 		success: function (data) {
 			sessionStorage.setItem("loggedInTime", new Date());
@@ -344,7 +342,6 @@ function forgotPassword() {
 		data: JSON.stringify(changePasswordRequestModel),
 		dataType: 'json',
 		cache: false,
-		async: false,
 		timeout: 600000,
 		success: function (data) {
 			$('form').trigger("reset");
@@ -460,7 +457,6 @@ function uploadPDF() {
 		processData: false,
 		contentType: false,
 		cache: false,
-		async: false,
 		timeout: 600000,
 		success: function (data) {
 			$('#upload-form').trigger("reset");
