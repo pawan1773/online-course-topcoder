@@ -2,7 +2,8 @@
 <div th:fragment="pdf">
 	<div id="course-box" class="col s12 m3">
 		<div class="row">
-			<button id="back-courses" class="back-courses btn waves-effect waves-light left">BACK
+			<button id="back-courses"
+				class="back-courses btn waves-effect waves-light left">BACK
 				TO COURSES</button>
 		</div>
 		<div class="row">
@@ -32,18 +33,21 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="center col s12" >
-				<div id="adobe-dc-sized-container" style="height: 400px; border: 1px solid #e0e0e0"></div>
-				<div id="adobe-dc-full-window" style="height: 500px; border: 1px solid #e0e0e0"></div>
+			<div class="center col s12">
+				<div id="adobe-dc-sized-container"
+					style="height: 400px; border: 1px solid #e0e0e0"></div>
+				<div id="adobe-dc-full-window"
+					style="height: 500px; border: 1px solid #e0e0e0"></div>
 			</div>
 		</div>
 		<div id="whiteboard-container" class="row">
-			<!-- <div class="center col s12">
-				<canvas id="canvas" height="500" width="500"></canvas>
-				<input type="button" value="draw" onclick="use_tool('draw');" /> <input
-					type="button" value="erase" onclick="use_tool('erase');" />
-			</div> -->
-			<button id="download-pdf" class="btn waves-effect waves-light left">DOWNLOAD</button>
+			<div class="center col s12">
+				<button id="white-board-clear" class="btn right">Clear</button>
+				<div id="whiteboard-canvas-container">
+					<canvas id="whiteboard-canvas"></canvas>
+				</div>
+				<button id="download-pdf" class="btn waves-effect waves-light left">DOWNLOAD</button>
+			</div>			
 		</div>
 	</div>
 </div>

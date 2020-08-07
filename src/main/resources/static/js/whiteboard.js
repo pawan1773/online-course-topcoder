@@ -1,59 +1,54 @@
-$(document)
-		.ready(
-				function() {
-					var canvas = document.getElementById('canvas');
-					var ctx = canvas.getContext('2d');
-					
-					var canvasx = $(canvas).offset().left;
-					var canvasy = $(canvas).offset().top;
-					var last_mousex = last_mousey = 0;
-					var mousex = mousey = 0;
-					var mousedown = false;
-					var tooltype = 'draw';
+var clearButton = document.getElementById('white-board-clear');
+    var canvascontainer = document.getElementById('whiteboard-canvas-container');
+    var canvas = document.getElementById('whiteboard-canvas');
+    var context = canvas.getContext('2d');
+    var radius = (document.getElementById('whiteboard-canvas-container').clientWidth + document.getElementById('whiteboard-canvas-container').clientHeight) / 150;
+    var dragging = false;
+    context.mozImageSmoothingEnabled = false;
+    context.imageSmoothingEnabled = false;
 
-					// Mousedown
-					$(canvas).on('mousedown', function(e) {
-						last_mousex = mousex = parseInt(e.clientX - canvasx);
-						last_mousey = mousey = parseInt(e.clientY - canvasy);
-						mousedown = true;
-					});
+    canvas.width = 1280;
+    canvas.height = 720;
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
 
-					// Mouseup
-					$(canvas).on('mouseup', function(e) {
-						mousedown = false;
-					});
+    /* CLEAR CANVAS */
+    function clearCanvas() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
-					// Mousemove
-					$(canvas)
-							.on(
-									'mousemove',
-									function(e) {
-										mousex = parseInt(e.clientX - canvasx);
-										mousey = parseInt(e.clientY - canvasy);
-										if (mousedown) {
-											ctx.beginPath();
-											if (tooltype == 'draw') {
-												ctx.globalCompositeOperation = 'source-over';
-												ctx.strokeStyle = 'black';
-												ctx.lineWidth = 3;
-											} else {
-												ctx.globalCompositeOperation = 'destination-out';
-												ctx.lineWidth = 10;
-											}
-											ctx
-													.moveTo(last_mousex,
-															last_mousey);
-											ctx.lineTo(mousex, mousey);
-											ctx.lineJoin = ctx.lineCap = 'round';
-											ctx.stroke();
-										}
-										last_mousex = mousex;
-										last_mousey = mousey;
-										
-									});
+    clearButton.addEventListener('click', clearCanvas);
 
-					
-					use_tool = function(tool) {
-						tooltype = tool; 
-					}
-				});
+    function getMouesPosition(e) {
+        var mouseX = e.offsetX * canvas.width / canvas.clientWidth | 0;
+        var mouseY = e.offsetY * canvas.height / canvas.clientHeight | 0;
+        return {x: mouseX, y: mouseY};
+    }
+
+    var putPoint = function (e) {
+        if (dragging) {
+            context.lineTo(getMouesPosition(e).x, getMouesPosition(e).y);
+            context.lineWidth = radius * 2;
+            context.stroke();
+            context.beginPath();
+            context.arc(getMouesPosition(e).x, getMouesPosition(e).y, radius, 0, Math.PI * 2);
+            context.fill();
+            context.beginPath();
+            context.moveTo(getMouesPosition(e).x, getMouesPosition(e).y);
+        }
+    };
+
+    var engage = function (e) {
+        dragging = true;
+        putPoint(e);
+    };
+    var disengage = function () {
+        dragging = false;
+        context.beginPath();
+    };
+
+    canvas.addEventListener('mousedown', engage);
+    canvas.addEventListener('mousemove', putPoint);
+    canvas.addEventListener('mouseup', disengage);
+    document.addEventListener('mouseup', disengage);
+    canvas.addEventListener('contextmenu', disengage);
