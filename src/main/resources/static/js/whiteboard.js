@@ -19,7 +19,7 @@ var clearButton = document.getElementById('white-board-clear');
 
     clearButton.addEventListener('click', clearCanvas);
 
-    function getMouesPosition(e) {
+    function getMousePosition(e) {
         var mouseX = e.offsetX * canvas.width / canvas.clientWidth | 0;
         var mouseY = e.offsetY * canvas.height / canvas.clientHeight | 0;
         return {x: mouseX, y: mouseY};
@@ -27,14 +27,14 @@ var clearButton = document.getElementById('white-board-clear');
 
     var putPoint = function (e) {
         if (dragging) {
-            context.lineTo(getMouesPosition(e).x, getMouesPosition(e).y);
+            context.lineTo(getMousePosition(e).x, getMousePosition(e).y);
             context.lineWidth = radius * 2;
             context.stroke();
             context.beginPath();
-            context.arc(getMouesPosition(e).x, getMouesPosition(e).y, radius, 0, Math.PI * 2);
+            context.arc(getMousePosition(e).x, getMousePosition(e).y, radius, 0, Math.PI * 2);
             context.fill();
             context.beginPath();
-            context.moveTo(getMouesPosition(e).x, getMouesPosition(e).y);
+            context.moveTo(getMousePosition(e).x, getMousePosition(e).y);
         }
     };
 
@@ -52,3 +52,6 @@ var clearButton = document.getElementById('white-board-clear');
     canvas.addEventListener('mouseup', disengage);
     document.addEventListener('mouseup', disengage);
     canvas.addEventListener('contextmenu', disengage);
+    canvas.addEventListener('touchstart', engage);
+    canvas.addEventListener('touchmove', putPoint);
+    canvas.addEventListener('touchend', disengage);
