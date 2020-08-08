@@ -58,11 +58,10 @@ var clearButton = document.getElementById('white-board-eraser');
     	  canvas.dispatchEvent(mouseEvent);
     	}, false);
     
+    canvas.addEventListener('touchstart', engage, false);
+    canvas.addEventListener('touchend', disengage, false);
    
     canvas.addEventListener('mousedown', engage);
-    canvas.addEventListener('touchstart', engage);
     canvas.addEventListener('mousemove', putPoint);
     canvas.addEventListener('mouseup', disengage);
-    canvas.addEventListener('touchend', disengage);
-    document.addEventListener('mouseup', disengage);
     canvas.addEventListener('contextmenu', disengage);
