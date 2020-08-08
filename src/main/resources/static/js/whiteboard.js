@@ -58,26 +58,11 @@ var clearButton = document.getElementById('white-board-eraser');
     	  canvas.dispatchEvent(mouseEvent);
     	}, false);
     
-    canvas.addEventListener("touchend", function (e) {
-  	  var touch = e.touches[0];
-  	  var mouseEvent = new MouseEvent("mouseup", {
-  	    clientX: touch.clientX,
-  	    clientY: touch.clientY
-  	  });
-  	  canvas.dispatchEvent(mouseEvent);
-  	}, false);
-    
-    canvas.addEventListener("touchstart", function (e) {
-  	  var touch = e.touches[0];
-  	  var mouseEvent = new MouseEvent("mousedown", {
-  	    clientX: touch.clientX,
-  	    clientY: touch.clientY
-  	  });
-  	  canvas.dispatchEvent(mouseEvent);
-  	}, false);
-
+   
     canvas.addEventListener('mousedown', engage);
+    canvas.addEventListener('touchstart', engage);
     canvas.addEventListener('mousemove', putPoint);
     canvas.addEventListener('mouseup', disengage);
+    canvas.addEventListener('touchend', disengage);
     document.addEventListener('mouseup', disengage);
     canvas.addEventListener('contextmenu', disengage);
