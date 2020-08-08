@@ -1,4 +1,4 @@
-var clearButton = document.getElementById('white-board-clear');
+var clearButton = document.getElementById('white-board-eraser');
     var canvascontainer = document.getElementById('whiteboard-canvas-container');
     var canvas = document.getElementById('whiteboard-canvas');
     var context = canvas.getContext('2d');
@@ -26,6 +26,8 @@ var clearButton = document.getElementById('white-board-clear');
     }
 
     var putPoint = function (e) {
+    	e.preventDefault();
+        e.stopPropagation();
         if (dragging) {
             context.lineTo(getMousePosition(e).x, getMousePosition(e).y);
             context.lineWidth = radius * 2;
@@ -46,12 +48,36 @@ var clearButton = document.getElementById('white-board-clear');
         dragging = false;
         context.beginPath();
     };
+    
+    canvas.addEventListener("touchmove", function (e) {
+    	  var touch = e.touches[0];
+    	  var mouseEvent = new MouseEvent("mousemove", {
+    	    clientX: touch.clientX,
+    	    clientY: touch.clientY
+    	  });
+    	  canvas.dispatchEvent(mouseEvent);
+    	}, false);
+    
+    canvas.addEventListener("touchend", function (e) {
+  	  var touch = e.touches[0];
+  	  var mouseEvent = new MouseEvent("mouseup", {
+  	    clientX: touch.clientX,
+  	    clientY: touch.clientY
+  	  });
+  	  canvas.dispatchEvent(mouseEvent);
+  	}, false);
+    
+    canvas.addEventListener("touchstart", function (e) {
+  	  var touch = e.touches[0];
+  	  var mouseEvent = new MouseEvent("mousedown", {
+  	    clientX: touch.clientX,
+  	    clientY: touch.clientY
+  	  });
+  	  canvas.dispatchEvent(mouseEvent);
+  	}, false);
 
     canvas.addEventListener('mousedown', engage);
     canvas.addEventListener('mousemove', putPoint);
     canvas.addEventListener('mouseup', disengage);
     document.addEventListener('mouseup', disengage);
     canvas.addEventListener('contextmenu', disengage);
-    canvas.addEventListener('touchstart', engage);
-    canvas.addEventListener('touchmove', putPoint);
-    canvas.addEventListener('touchend', disengage);
