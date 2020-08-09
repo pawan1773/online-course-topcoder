@@ -20,6 +20,7 @@ import com.topcoder.course.online.service.LoginService;
  * </p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @RestController
 @RequestMapping("/")
@@ -30,7 +31,7 @@ public class LoginController {
 
 	/**
 	 * <p>
-	 * To login user.
+	 * To login a user.
 	 * </p>
 	 * 
 	 * @param model
@@ -39,7 +40,6 @@ public class LoginController {
 	@PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> loginUser(@RequestBody final LoginRequestModel model) {
 		final Map<String, Object> body = this.loginServiceImpl.loginUser(model);
-
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
 
@@ -54,7 +54,6 @@ public class LoginController {
 	@PostMapping(value = "/changePassword", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> changePassword(@RequestBody final ForgotPasswordRequestModel model) {
 		final Map<String, Object> body = this.loginServiceImpl.changePassword(model);
-
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ import com.topcoder.course.online.service.PdfService;
  * </p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @RestController
 public class PdfController {
@@ -38,30 +40,28 @@ public class PdfController {
 	 * </p>
 	 * 
 	 * @param model
-	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 * @return instance of {@linkplain ResponseEntity}
 	 */
 	@PostMapping(value = "/generatePdf", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> generatePdf(@RequestBody final GeneratePdfRequestModel model) {
 		final Map<String, Object> body = this.pdfServiceImpl.generatePdf(model);
-
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
 
 	/**
 	 * <p>
-	 * To upload file.
+	 * To upload pdf file.
 	 * </p>
 	 * 
 	 * @param fileLinkName
 	 * @param courseCategory
 	 * @param uploadfile
-	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 * @return instance of {@linkplain ResponseEntity}
 	 */
 	@PostMapping(value = "/uploadPdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<?> uploadFile(@RequestParam("fileLinkName") String fileLinkName,
 			@RequestParam("courseCategory") String courseCategory, @RequestParam("file") MultipartFile uploadfile) {
 		final Map<String, Object> body = this.pdfServiceImpl.uploadPdf(fileLinkName, courseCategory, uploadfile);
-
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
 
@@ -71,7 +71,8 @@ public class PdfController {
 	 * </p>
 	 * 
 	 * @param courseCategory
-	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 * @return instance of {@linkplain ResponseEntity} containing {@linkplain List}
+	 *         of type {@link CourseFile}
 	 */
 	@GetMapping(value = "/getFiles/{courseCategory}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CourseFile>> getFiles(@PathVariable("courseCategory") String courseCategory) {
@@ -84,7 +85,7 @@ public class PdfController {
 	 * </p>
 	 * 
 	 * @param fileId
-	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 * @return instance of {@linkplain ResponseEntity} of type {@link CourseFile}
 	 */
 	@GetMapping(value = "/getFileById/{fileId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CourseFile> findByFileId(@PathVariable("fileId") String fileId) {
@@ -97,7 +98,7 @@ public class PdfController {
 	 * </p>
 	 * 
 	 * @param model
-	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 * @return instance of {@linkplain ResponseEntity}
 	 */
 	@PostMapping(value = "/saveAnnotation", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> saveAnnotation(@RequestBody final Map<String, Object> model) {
@@ -111,7 +112,7 @@ public class PdfController {
 	 * </p>
 	 * 
 	 * @param courseCategory
-	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 * @return instance of {@linkplain ResponseEntity}
 	 */
 	@GetMapping(value = "/annotationsByFileId/{fileId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getAnnotationsByFileId(@PathVariable("fileId") String fileId) {
@@ -120,7 +121,7 @@ public class PdfController {
 
 	/**
 	 * <p>
-	 * To annotations by file by id.
+	 * To delete annotation by annotation id.
 	 * </p>
 	 * 
 	 * @param courseCategory
@@ -129,6 +130,20 @@ public class PdfController {
 	@DeleteMapping(value = "/deleteAnnotation/{annotationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteAnnotation(@PathVariable("annotationId") String annotationId) {
 		this.pdfServiceImpl.deleteAnnotation(annotationId);
+		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * <p>
+	 * To update annotation.
+	 * </p>
+	 * 
+	 * @param model
+	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 */
+	@PutMapping(value = "/updateAnnotation", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateAnnotation(@RequestBody final Map<String, Object> model) {
+		this.pdfServiceImpl.updateAnnotation(model);
 		return ResponseEntity.ok().build();
 	}
 }

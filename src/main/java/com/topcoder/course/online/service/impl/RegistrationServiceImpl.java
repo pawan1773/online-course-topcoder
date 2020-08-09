@@ -21,6 +21,7 @@ import com.topcoder.course.online.service.RegistrationService;
  * <p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @Service
 public class RegistrationServiceImpl implements RegistrationService {

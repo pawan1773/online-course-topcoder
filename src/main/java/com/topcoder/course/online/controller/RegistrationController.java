@@ -18,6 +18,7 @@ import com.topcoder.course.online.service.RegistrationService;
  * </p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @RestController
 public class RegistrationController {
@@ -36,7 +37,6 @@ public class RegistrationController {
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> registerUser(@RequestBody final RegistrationRequestModel model) {
 		final Map<String, Object> body = this.registrationServiceImpl.registerUser(model);
-
 		return body.containsKey("error") ? ResponseEntity.badRequest().body(body) : ResponseEntity.ok(body);
 	}
 }

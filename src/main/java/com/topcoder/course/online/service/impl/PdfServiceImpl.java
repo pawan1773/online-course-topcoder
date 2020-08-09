@@ -12,11 +12,13 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,15 @@ import com.topcoder.course.online.repository.CourseFileRepository;
 import com.topcoder.course.online.repository.PdfAnnotationRepository;
 import com.topcoder.course.online.service.PdfService;
 
+/**
+ * <p>
+ * This is implementation class for {@link PdfService}. This class contains
+ * business logic for pdf relation operations.
+ * <p>
+ * 
+ * @author joginder.pawan@gmail.com
+ * 
+ */
 @Service
 public class PdfServiceImpl implements PdfService {
 
@@ -183,16 +194,39 @@ public class PdfServiceImpl implements PdfService {
 		}
 	}
 
+	/**
+	 * <p>
+	 * Returns list of files for course category.
+	 * </p>
+	 * 
+	 * @param courseCategory
+	 * @return {@link List} of {@link CourseFile}
+	 */
 	@Override
 	public List<CourseFile> findByCourseCategory(String courseCategory) {
 		return this.courseFileRepository.findByCourseCategory(courseCategory);
 	}
 
+	/**
+	 * <p>
+	 * To get {@link CourseFile} by id.
+	 * </p>
+	 * 
+	 * @param id
+	 * @return instance of {@link CourseFile}
+	 */
 	@Override
 	public CourseFile findByFileId(final String id) {
 		return this.courseFileRepository.findById(id).get();
 	}
 
+	/**
+	 * <p>
+	 * To save annotation
+	 * </p>
+	 * 
+	 * @param map
+	 */
 	@Override
 	public void saveAnnotation(Map<String, Object> map) {
 		final String annotationId = map.get("annotationId").toString();
@@ -223,11 +257,19 @@ public class PdfServiceImpl implements PdfService {
 		}
 	}
 
+	/**
+	 * <p>
+	 * To get annotations by file id.
+	 * </p>
+	 * 
+	 * @param fileId
+	 * @return {@linkplain List} of {@linkplain Map}
+	 */
 	@Override
 	public List<HashMap<String, Object>> getAnnotationsByFileId(String fileId) {
-		List<String> annotations = this.pdfAnnotationRepository.findByFileId(fileId);
-		ObjectMapper objectMapper = new ObjectMapper();
-		List<HashMap<String, Object>> list = new ArrayList<>();
+		final List<String> annotations = this.pdfAnnotationRepository.findByFileId(fileId);
+		final ObjectMapper objectMapper = new ObjectMapper();
+		final List<HashMap<String, Object>> list = new ArrayList<>();
 		annotations.forEach(annotation -> {
 			try {
 				HashMap<String, Object> readValue = objectMapper.readValue(annotation,
@@ -241,9 +283,43 @@ public class PdfServiceImpl implements PdfService {
 		return list;
 	}
 
+	/**
+	 * <p>
+	 * To delete annotation by annotation id.
+	 * </p>
+	 * 
+	 * @param annotationId
+	 */
 	@Transactional
 	@Override
 	public void deleteAnnotation(final String annotationId) {
 		this.pdfAnnotationRepository.deleteByAnnotationId(annotationId);
+	}
+
+	/**
+	 * <p>
+	 * To update annotation.
+	 * </p>
+	 * 
+	 * @param model
+	 */
+	@Transactional
+	@Modifying
+	@Override
+	public void updateAnnotation(final Map<String, Object> model) {
+		final String annotationId = model.get("annotationId").toString();
+		final ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			final Optional<PdfAnnotation> oPdfAnnotation = this.pdfAnnotationRepository
+					.findByAnnotationId(annotationId);
+			if (oPdfAnnotation.isPresent()) {
+				final PdfAnnotation pdfAnnotation = oPdfAnnotation.get();
+				final String jsonString = objectMapper.writeValueAsString(model.get("annotation"));
+				pdfAnnotation.setAnnotation(jsonString);
+				this.pdfAnnotationRepository.save(pdfAnnotation);
+			}
+		} catch (final JsonProcessingException e) {
+			e.printStackTrace();
+		}
 	}
 }

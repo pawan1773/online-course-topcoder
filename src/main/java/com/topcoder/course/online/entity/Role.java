@@ -15,6 +15,7 @@ import javax.persistence.Table;
  * <p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @Entity
 @Table(name = "role_details")

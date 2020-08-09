@@ -645,7 +645,7 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise, fileId) {
 				}
 				break;
 			case 'ANNOTATION_UPDATED':
-				//updateAnnotation(fileId, e.data.source);
+				updateAnnotation(e.data);
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has updated comment on ' + fileName, {
 						'event_category': 'COMMENT_UPDATED',

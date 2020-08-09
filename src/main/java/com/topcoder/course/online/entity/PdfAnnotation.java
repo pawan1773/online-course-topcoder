@@ -15,6 +15,7 @@ import javax.persistence.Table;
  * <p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @Entity
 @Table(name = "pdf_annotation")
@@ -67,5 +68,4 @@ public class PdfAnnotation implements Serializable {
 	public void setFileId(String fileId) {
 		this.fileId = fileId;
 	}
-
 }

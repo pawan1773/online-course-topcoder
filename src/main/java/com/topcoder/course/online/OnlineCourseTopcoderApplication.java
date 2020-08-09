@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * </p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @SpringBootApplication
 public class OnlineCourseTopcoderApplication {

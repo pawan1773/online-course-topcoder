@@ -4,6 +4,14 @@ import java.util.Map;
 
 import com.topcoder.course.online.model.request.RegistrationRequestModel;
 
+/**
+ * <p>
+ * Contains methods for the user registration feature.
+ * </p>
+ * 
+ * @author joginder.pawan@gmail.com
+ *
+ */
 public interface RegistrationService {
 
 	/**

@@ -76,3 +76,25 @@ function addAnnotations(annotationManager, fileId) {
 		}
 	});   
 }
+
+function updateAnnotation(annotation) {
+	var keyValue = {
+		"annotationId" : annotation.id,
+		"annotation" : annotation
+	}
+
+	$.ajax({
+		type : "PUT",
+		contentType : "application/json",
+		url : "/updateAnnotation",
+		data : JSON.stringify(keyValue),
+		cache : false,
+		timeout : 600000,
+		success : function(data) {
+			console.log("Annotation updated.")
+		},
+		error : function(textStatus, errorThrown) {
+			console.error(JSON.stringify(textStatus));
+		}
+	});
+}

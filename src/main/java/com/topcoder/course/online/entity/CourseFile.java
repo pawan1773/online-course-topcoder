@@ -16,6 +16,7 @@ import javax.persistence.Table;
  * <p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @Entity
 @Table(name = "course_file_details")

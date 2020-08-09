@@ -6,6 +6,7 @@ package com.topcoder.course.online.model.request;
  * </p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 public class LoginRequestModel {
 

@@ -21,6 +21,7 @@ import com.topcoder.course.online.service.LoginService;
  * <p>
  * 
  * @author joginder.pawan@gmail.com
+ * 
  */
 @Service
 public class LoginServiceImpl implements LoginService {

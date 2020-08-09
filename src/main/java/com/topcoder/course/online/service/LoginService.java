@@ -5,6 +5,14 @@ import java.util.Map;
 import com.topcoder.course.online.model.request.ForgotPasswordRequestModel;
 import com.topcoder.course.online.model.request.LoginRequestModel;
 
+/**
+ * <p>
+ * Contains methods for the user login feature.
+ * </p>
+ * 
+ * @author joginder.pawan@gmail.com
+ *
+ */
 public interface LoginService {
 
 	/**
@@ -16,7 +24,7 @@ public interface LoginService {
 	 * @return {@linkplain Map}
 	 */
 	Map<String, Object> loginUser(final LoginRequestModel model);
-	
+
 	/**
 	 * <p>
 	 * To change password.
