@@ -1,7 +1,7 @@
 function saveAnnotation(fileId, annotation) {
 	var keyValue = {
 		"fileId" : fileId,
-		"source" : annotation.target.source,
+		"annotationId" : annotation.id,
 		"annotation" : annotation
 	}
 
@@ -28,14 +28,6 @@ function loadAnnotations(previewFilePromise, fileId) {
         	});
 	});    	
 }
-
-/*
- * function callAnnotationApis(previewFilePromise, previewFileConfig) { called
- * from main }
- */
-
-
-
 
 
 function addAnnotations(annotationManager, fileId) {	

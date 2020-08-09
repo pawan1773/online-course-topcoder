@@ -636,6 +636,8 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise, fileId) {
 				}
 				break;
 			case 'ANNOTATION_DELETED':
+				alert('here')
+				//deleteAnnotation(fileId, e.data.source);
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has deleted comment from assignment ' + fileName, {
 						'event_category': 'COMMENT_DELETED',
@@ -644,6 +646,7 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise, fileId) {
 				}
 				break;
 			case 'ANNOTATION_UPDATED':
+				//updateAnnotation(fileId, e.data.source);
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has updated comment on ' + fileName, {
 						'event_category': 'COMMENT_UPDATED',

@@ -12,8 +12,8 @@ import com.topcoder.course.online.entity.PdfAnnotation;
 @Repository
 public interface PdfAnnotationRepository extends JpaRepository<PdfAnnotation, Long> {
 
-	//List<PdfAnnotation> findByFileId(final String fileId);
-
 	@Query("select annotation from PdfAnnotation where fileId = :fileId")
 	List<String> findByFileId(@Param(value = "fileId") final String fileId);
+
+	boolean existsByAnnotationId(String string);
 }

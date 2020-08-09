@@ -27,9 +27,9 @@ public class PdfAnnotation implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "source_id", nullable = false)
-	private String sourceId;
-	
+	@Column(name = "annotation_id", nullable = false)
+	private String annotationId;
+
 	@Column(name = "file_id", nullable = false)
 	private String fileId;
 
@@ -52,12 +52,12 @@ public class PdfAnnotation implements Serializable {
 		this.annotation = annotation;
 	}
 
-	public String getSourceId() {
-		return sourceId;
+	public String getAnnotationId() {
+		return annotationId;
 	}
 
-	public void setSourceId(String sourceId) {
-		this.sourceId = sourceId;
+	public void setAnnotationId(String annotationId) {
+		this.annotationId = annotationId;
 	}
 
 	public String getFileId() {
@@ -67,6 +67,5 @@ public class PdfAnnotation implements Serializable {
 	public void setFileId(String fileId) {
 		this.fileId = fileId;
 	}
-	
-	
+
 }

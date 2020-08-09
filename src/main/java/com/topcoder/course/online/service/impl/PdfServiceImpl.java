@@ -12,7 +12,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -65,8 +64,8 @@ public class PdfServiceImpl implements PdfService {
 			final String htmlContent = "<img src = \"" + model.getEncodedImage() + "\" />";
 			final String rootPath = "src/main/resources";
 			final String pathWithUserFolder = rootPath + "/static/" + model.getUser() + "/";
-
-			final String folderName = pathWithUserFolder + generateRandomFolderName();
+            final String randomDirectory = UUID.randomUUID().toString();
+			final String folderName = pathWithUserFolder + randomDirectory;
 
 			final String zipDirectory = folderName + "/zip/";
 			final String pdfDirectory = folderName + "/pdf/";
@@ -148,25 +147,6 @@ public class PdfServiceImpl implements PdfService {
 
 	/**
 	 * <p>
-	 * To generate random folder name.
-	 * </p>
-	 * 
-	 * @return {@linkplain String}
-	 */
-	private String generateRandomFolderName() {
-		int leftLimit = 48;
-		int rightLimit = 122;
-		int targetStringLength = 20;
-		final Random random = new Random();
-
-		String generatedString = random.ints(leftLimit, rightLimit + 1)
-				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97)).limit(targetStringLength)
-				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-		return generatedString;
-	}
-
-	/**
-	 * <p>
 	 * To upload file.
 	 * </p>
 	 * 
@@ -214,12 +194,22 @@ public class PdfServiceImpl implements PdfService {
 
 	@Override
 	public void saveAnnotation(Map<String, Object> map) {
+		final String annotationId = map.get("annotationId").toString();
+		boolean isConflict = this.pdfAnnotationRepository.existsByAnnotationId(annotationId);
+
 		final PdfAnnotation pdfAnnotation = new PdfAnnotation();
 		pdfAnnotation.setFileId(map.get("fileId").toString());
-		pdfAnnotation.setSourceId(map.get("source").toString());
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			String jsonString = objectMapper.writeValueAsString(map.get("annotation"));
+			if (isConflict) {
+				final String newAnnotationId = UUID.randomUUID().toString();
+				jsonString = jsonString.replace(annotationId, newAnnotationId);
+				pdfAnnotation.setAnnotationId(newAnnotationId);
+			} else {
+				pdfAnnotation.setAnnotationId(annotationId);
+			}
 			pdfAnnotation.setAnnotation(jsonString);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -234,15 +224,15 @@ public class PdfServiceImpl implements PdfService {
 		List<HashMap<String, Object>> list = new ArrayList<>();
 		annotations.forEach(annotation -> {
 			try {
-				HashMap<String, Object> readValue = objectMapper.readValue(annotation, new TypeReference<HashMap<String, Object>>() {
-				});
+				HashMap<String, Object> readValue = objectMapper.readValue(annotation,
+						new TypeReference<HashMap<String, Object>>() {
+						});
 				list.add(readValue);
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 			}
 		});
-		
+
 		return list;
-		
 	}
 }

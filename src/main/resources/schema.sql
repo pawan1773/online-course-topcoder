@@ -14,4 +14,4 @@ drop table if exists course_file_details;
 create table course_file_details (id varchar(255) not null, content oid, course_category varchar(30), file_link_name varchar(30), file_name varchar(50), primary key (id));
 
 drop table if exists pdf_annotation;
-create table pdf_annotation (id int8 not null, annotation_ob TEXT not null, source_id varchar(255) not null, file_id varchar(255) not null, primary key (id));
+create table pdf_annotation (id int8 not null, annotation_ob TEXT not null, annotation_id varchar(255) not null, file_id varchar(255) not null, primary key (id));
