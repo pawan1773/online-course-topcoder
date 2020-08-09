@@ -39,6 +39,8 @@ public interface PdfService {
 	CourseFile findByFileId(final String id);
 
 	void saveAnnotation(final Map<String, Object> map);
+	
+	void deleteAnnotation(String annotationId);
 
 	List<HashMap<String, Object>> getAnnotationsByFileId(final String fileId);
 }

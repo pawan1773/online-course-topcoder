@@ -2,6 +2,7 @@ function saveAnnotation(fileId, annotation) {
 	var keyValue = {
 		"fileId" : fileId,
 		"annotationId" : annotation.id,
+		"createDate" : annotation.created,
 		"annotation" : annotation
 	}
 
@@ -14,6 +15,22 @@ function saveAnnotation(fileId, annotation) {
 		timeout : 600000,
 		success : function(data) {
 			console.log("Annotation saved.")
+		},
+		error : function(textStatus, errorThrown) {
+			console.error(JSON.stringify(textStatus));
+		}
+	});
+}
+
+function deleteAnnotation(annotationId) {
+	$.ajax({
+		type : "DELETE",
+		contentType : "application/json",
+		url : "/deleteAnnotation/" + annotationId,
+		cache : false,
+		timeout : 600000,
+		success : function(data) {
+			console.log("Annotation deleted.")
 		},
 		error : function(textStatus, errorThrown) {
 			console.error(JSON.stringify(textStatus));
@@ -47,15 +64,6 @@ function addAnnotations(annotationManager, fileId) {
 				annotationManager.addAnnotations(annotations)
 	            .then(function () {				
 	            	console.log("Annotations added through API successfully");
-	            })
-	            .catch(function (error) {
-	                console.log(error)
-	            });
-
-
-	        annotationManager.getAnnotations()
-	            .then(function (result) {
-	                console.log("GET all annotations", result)
 	            })
 	            .catch(function (error) {
 	                console.log(error)

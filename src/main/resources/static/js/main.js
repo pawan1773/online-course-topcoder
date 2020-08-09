@@ -606,8 +606,8 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise, fileId) {
 					});
 				}
 				break;
-			case 'ANNOTATION_ADDED':
-				saveAnnotation(fileId, e.data);
+			case 'ANNOTATION_ADDED':				
+				saveAnnotation(fileId, e.data);				
 				const comment = e.data.bodyValue;
 				const motivation = e.data.motivation;
 				
@@ -636,8 +636,7 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise, fileId) {
 				}
 				break;
 			case 'ANNOTATION_DELETED':
-				alert('here')
-				//deleteAnnotation(fileId, e.data.source);
+				deleteAnnotation(e.data.id);
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has deleted comment from assignment ' + fileName, {
 						'event_category': 'COMMENT_DELETED',

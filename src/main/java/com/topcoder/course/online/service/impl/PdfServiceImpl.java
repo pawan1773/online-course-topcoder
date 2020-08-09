@@ -19,6 +19,7 @@ import java.util.zip.ZipOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.adobe.platform.operation.ExecutionContext;
@@ -64,7 +65,7 @@ public class PdfServiceImpl implements PdfService {
 			final String htmlContent = "<img src = \"" + model.getEncodedImage() + "\" />";
 			final String rootPath = "src/main/resources";
 			final String pathWithUserFolder = rootPath + "/static/" + model.getUser() + "/";
-            final String randomDirectory = UUID.randomUUID().toString();
+			final String randomDirectory = UUID.randomUUID().toString();
 			final String folderName = pathWithUserFolder + randomDirectory;
 
 			final String zipDirectory = folderName + "/zip/";
@@ -195,26 +196,31 @@ public class PdfServiceImpl implements PdfService {
 	@Override
 	public void saveAnnotation(Map<String, Object> map) {
 		final String annotationId = map.get("annotationId").toString();
-		boolean isConflict = this.pdfAnnotationRepository.existsByAnnotationId(annotationId);
 
-		final PdfAnnotation pdfAnnotation = new PdfAnnotation();
-		pdfAnnotation.setFileId(map.get("fileId").toString());
+		boolean isPresent = this.pdfAnnotationRepository.existsByAnnotationIdAndAnnotationContaining(annotationId,
+				map.get("createDate").toString());
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			String jsonString = objectMapper.writeValueAsString(map.get("annotation"));
-			if (isConflict) {
-				final String newAnnotationId = UUID.randomUUID().toString();
-				jsonString = jsonString.replace(annotationId, newAnnotationId);
-				pdfAnnotation.setAnnotationId(newAnnotationId);
-			} else {
-				pdfAnnotation.setAnnotationId(annotationId);
+		if (!isPresent) {
+			boolean isConflict = this.pdfAnnotationRepository.existsByAnnotationId(annotationId);
+			final PdfAnnotation pdfAnnotation = new PdfAnnotation();
+			pdfAnnotation.setFileId(map.get("fileId").toString());
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				String jsonString = objectMapper.writeValueAsString(map.get("annotation"));
+				if (isConflict) {
+					final String newAnnotationId = UUID.randomUUID().toString();
+					jsonString = jsonString.replace(annotationId, newAnnotationId);
+					pdfAnnotation.setAnnotationId(newAnnotationId);
+				} else {
+					pdfAnnotation.setAnnotationId(annotationId);
+				}
+				pdfAnnotation.setAnnotation(jsonString);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
 			}
-			pdfAnnotation.setAnnotation(jsonString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			this.pdfAnnotationRepository.save(pdfAnnotation);
 		}
-		this.pdfAnnotationRepository.save(pdfAnnotation);
 	}
 
 	@Override
@@ -232,7 +238,12 @@ public class PdfServiceImpl implements PdfService {
 				e.printStackTrace();
 			}
 		});
-
 		return list;
+	}
+
+	@Transactional
+	@Override
+	public void deleteAnnotation(final String annotationId) {
+		this.pdfAnnotationRepository.deleteByAnnotationId(annotationId);
 	}
 }

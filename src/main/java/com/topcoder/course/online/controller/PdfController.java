@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -103,7 +104,7 @@ public class PdfController {
 		this.pdfServiceImpl.saveAnnotation(model);
 		return ResponseEntity.ok().build();
 	}
-	
+
 	/**
 	 * <p>
 	 * To annotations by file by id.
@@ -115,5 +116,19 @@ public class PdfController {
 	@GetMapping(value = "/annotationsByFileId/{fileId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getAnnotationsByFileId(@PathVariable("fileId") String fileId) {
 		return ResponseEntity.ok(this.pdfServiceImpl.getAnnotationsByFileId(fileId));
+	}
+
+	/**
+	 * <p>
+	 * To annotations by file by id.
+	 * </p>
+	 * 
+	 * @param courseCategory
+	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 */
+	@DeleteMapping(value = "/deleteAnnotation/{annotationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> deleteAnnotation(@PathVariable("annotationId") String annotationId) {
+		this.pdfServiceImpl.deleteAnnotation(annotationId);
+		return ResponseEntity.ok().build();
 	}
 }
