@@ -82,11 +82,38 @@ public class PdfController {
 	 * To get file by id.
 	 * </p>
 	 * 
-	 * @param courseCategory
+	 * @param fileId
 	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
 	 */
 	@GetMapping(value = "/getFileById/{fileId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CourseFile> findByFileId(@PathVariable("fileId") String fileId) {
 		return ResponseEntity.ok(this.pdfServiceImpl.findByFileId(fileId));
+	}
+
+	/**
+	 * <p>
+	 * To save annotation.
+	 * </p>
+	 * 
+	 * @param model
+	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 */
+	@PostMapping(value = "/saveAnnotation", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> saveAnnotation(@RequestBody final Map<String, Object> model) {
+		this.pdfServiceImpl.saveAnnotation(model);
+		return ResponseEntity.ok().build();
+	}
+	
+	/**
+	 * <p>
+	 * To annotations by file by id.
+	 * </p>
+	 * 
+	 * @param courseCategory
+	 * @return instance of {@linkplain ResponseEntity} of type {@linkplain Map}
+	 */
+	@GetMapping(value = "/annotationsByFileId/{fileId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getAnnotationsByFileId(@PathVariable("fileId") String fileId) {
+		return ResponseEntity.ok(this.pdfServiceImpl.getAnnotationsByFileId(fileId));
 	}
 }

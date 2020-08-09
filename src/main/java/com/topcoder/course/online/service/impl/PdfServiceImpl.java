@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +31,14 @@ import com.adobe.platform.operation.io.FileRef;
 import com.adobe.platform.operation.pdfops.CreatePDFOperation;
 import com.adobe.platform.operation.pdfops.options.createpdf.CreatePDFOptions;
 import com.adobe.platform.operation.pdfops.options.createpdf.PageLayout;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.topcoder.course.online.entity.CourseFile;
+import com.topcoder.course.online.entity.PdfAnnotation;
 import com.topcoder.course.online.model.request.GeneratePdfRequestModel;
 import com.topcoder.course.online.repository.CourseFileRepository;
+import com.topcoder.course.online.repository.PdfAnnotationRepository;
 import com.topcoder.course.online.service.PdfService;
 
 @Service
@@ -40,6 +46,9 @@ public class PdfServiceImpl implements PdfService {
 
 	@Autowired
 	private CourseFileRepository courseFileRepository;
+
+	@Autowired
+	private PdfAnnotationRepository pdfAnnotationRepository;
 
 	/**
 	 * <p>
@@ -105,7 +114,7 @@ public class PdfServiceImpl implements PdfService {
 			map.put("encodedFile", encodedFile);
 
 			pdfFis.close();
-			
+
 			return map;
 		} catch (final ServiceApiException | IOException | SdkException | ServiceUsageException ex) {
 			map.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -201,5 +210,39 @@ public class PdfServiceImpl implements PdfService {
 	@Override
 	public CourseFile findByFileId(final String id) {
 		return this.courseFileRepository.findById(id).get();
+	}
+
+	@Override
+	public void saveAnnotation(Map<String, Object> map) {
+		final PdfAnnotation pdfAnnotation = new PdfAnnotation();
+		pdfAnnotation.setFileId(map.get("fileId").toString());
+		pdfAnnotation.setSourceId(map.get("source").toString());
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			String jsonString = objectMapper.writeValueAsString(map.get("annotation"));
+			pdfAnnotation.setAnnotation(jsonString);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		this.pdfAnnotationRepository.save(pdfAnnotation);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> getAnnotationsByFileId(String fileId) {
+		List<String> annotations = this.pdfAnnotationRepository.findByFileId(fileId);
+		ObjectMapper objectMapper = new ObjectMapper();
+		List<HashMap<String, Object>> list = new ArrayList<>();
+		annotations.forEach(annotation -> {
+			try {
+				HashMap<String, Object> readValue = objectMapper.readValue(annotation, new TypeReference<HashMap<String, Object>>() {
+				});
+				list.add(readValue);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+			}
+		});
+		
+		return list;
+		
 	}
 }

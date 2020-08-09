@@ -199,14 +199,14 @@ $(document).ready(function () {
 					"defaultViewMode": "FIT_WIDTH",
 					"embedMode": embedMode,
 					"enableAnnotationAPIs": true,
-					"showLeftHandPanel": false
+					"showLeftHandPanel": false,
+					"includePDFAnnotations:": true
 				};
 
 				/* to set preview properties */
 				setPreviewFile(divId, viewerConfig, previewFileConfig);
 
 				clicker = '';
-				console.log("Total courses:" + data);
 			},
 			error: function (textStatus, errorThrown) {
 				clicker = '';
@@ -382,68 +382,70 @@ function forgotPassword() {
  * @param previewFileConfig
  */
 function setPreviewFile(divId, viewerConfig, previewFileConfig) {
-	/* set adobeDCView */
-	var adobeDCView = new AdobeDC.View({
-		clientId: CLIENT_ID,
-		divId: divId
-	});
-
-	/* get logged in user info from session storage */
-	const userInfo = getUserInfoFromSessionStorage();
-	const profile = {
-		userProfile: {
-			name: userInfo.name,
-			firstName: userInfo.firstName,
-			lastName: userInfo.lastName,
-			email: userInfo.email
-		}
-	}
-
-	/* register user profile callback */
-	adobeDCView.registerCallback(
-		AdobeDC.View.Enum.CallbackType.GET_USER_PROFILE_API,
-		function () {
-			return new Promise((resolve, reject) => {
-				resolve({
-					code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
-					data: profile
-				})
-			})
+		/* set adobeDCView */
+		var adobeDCView = new AdobeDC.View({
+			clientId: CLIENT_ID,
+			divId: divId
 		});
-
-
-	/* set file preview */
-	var reader = new FileReader();
-	var binaryString = window.atob(previewFileConfig.content);
-	var binaryLen = binaryString.length;
-	var bytes = new Uint8Array(binaryLen);
-	for (var i = 0; i < binaryLen; i++) {
-		var ascii = binaryString.charCodeAt(i);
-		bytes[i] = ascii;
-	}
-	var blob = new Blob([bytes], {
-		type: 'application/pdf'
-	});
-	var previewFilePromise = '';
-	reader.onloadend = function (e) {
-		var filePromise = Promise.resolve(e.target.result);
-		var previewFilePromise = adobeDCView.previewFile({
-			content: {
-				promise: filePromise
-			},
-			metaData: {
-				fileName: previewFileConfig.fileName,
-				id: previewFileConfig.id
+	
+		/* get logged in user info from session storage */
+		const userInfo = getUserInfoFromSessionStorage();
+		const profile = {
+			userProfile: {
+				name: userInfo.name,
+				firstName: userInfo.firstName,
+				lastName: userInfo.lastName,
+				email: userInfo.email
 			}
-		}, viewerConfig);
-
-		/* set pdf meta data in session storage */
-		setPdfMetaDataInSession(previewFilePromise);
-
-		/* to handle events on PDF */
-		handleEventsOnPDF(adobeDCView, previewFilePromise);
-	};
-	reader.readAsArrayBuffer(blob);
+		}
+	
+		/* register user profile callback */
+		adobeDCView.registerCallback(
+			AdobeDC.View.Enum.CallbackType.GET_USER_PROFILE_API,
+			function () {
+				return new Promise((resolve, reject) => {
+					resolve({
+						code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+						data: profile
+					})
+				})
+			});
+	
+	
+		/* set file preview */
+		var reader = new FileReader();
+		var binaryString = window.atob(previewFileConfig.content);
+		var binaryLen = binaryString.length;
+		var bytes = new Uint8Array(binaryLen);
+		for (var i = 0; i < binaryLen; i++) {
+			var ascii = binaryString.charCodeAt(i);
+			bytes[i] = ascii;
+		}
+		var blob = new Blob([bytes], {
+			type: 'application/pdf'
+		});
+		var previewFilePromise = '';
+		reader.onloadend = function (e) {
+			var filePromise = Promise.resolve(e.target.result);
+			var previewFilePromise = adobeDCView.previewFile({
+				content: {
+					promise: filePromise
+				},
+				metaData: {
+					fileName: previewFileConfig.fileName,
+					id: previewFileConfig.id
+				}
+			}, viewerConfig);
+	
+			/* set pdf meta data in session storage */
+			setPdfMetaDataInSession(previewFilePromise);
+	
+			/* to handle events on PDF */
+			handleEventsOnPDF(adobeDCView, previewFilePromise, previewFileConfig.id);
+			
+			loadAnnotations(previewFilePromise, previewFileConfig.id);
+		};
+		reader.readAsArrayBuffer(blob);
 }
 
 
@@ -541,7 +543,7 @@ function downloadPdf() {
  * 
  * @param adobeDCView
  */
-function handleEventsOnPDF(adobeDCView, previewFilePromise) {
+function handleEventsOnPDF(adobeDCView, previewFilePromise, fileId) {
 	const userInfo = getUserInfoFromSessionStorage();
 	var totalPages = 0;
 	var fileName = '';
@@ -549,8 +551,6 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 		switch (e.type) {
 			case 'DOCUMENT_OPEN':
 				fileName = e.data.fileName;
-				// fetch id for file
-				// addOldCommentsToPreview(previewFilePromise, id);
 				if (isStudent(userInfo)) {
 					gtag('event', userInfo.firstName + ' has opened ' + fileName, {
 						'event_category': 'DOCUMENT_OPEN',
@@ -607,9 +607,10 @@ function handleEventsOnPDF(adobeDCView, previewFilePromise) {
 				}
 				break;
 			case 'ANNOTATION_ADDED':
+				saveAnnotation(fileId, e.data);
 				const comment = e.data.bodyValue;
 				const motivation = e.data.motivation;
-
+				
 				/* check if assignment completed */
 				if (assignmentCompleted(userInfo, comment, motivation)) {
 					gtag('event', userInfo.firstName + ' has completed the assignment on ' + fileName, {

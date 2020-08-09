@@ -1,5 +1,6 @@
 package com.topcoder.course.online.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +37,8 @@ public interface PdfService {
 	List<CourseFile> findByCourseCategory(final String courseCategory);
 
 	CourseFile findByFileId(final String id);
+
+	void saveAnnotation(final Map<String, Object> map);
+
+	List<HashMap<String, Object>> getAnnotationsByFileId(final String fileId);
 }
