@@ -9,8 +9,14 @@ $(document).ready(function () {
 		$('.username-placeholder').text(
 			'Hello, ' + sessionStorage.getItem('firstName'));
 		$('.with-session').show();
-		$('#courses-container').show();
-
+		
+		var pageToShow = sessionStorage.getItem('currentPage')
+		if(pageToShow === 'courses-container') {
+			$('#courses-container').show();
+		} else {
+			getCourses(sessionStorage.getItem('courseCategory'));
+		}		
+      
 		if (userInfo.role === 'Student') {
 			$('.upload-li').hide();
 		}
@@ -75,6 +81,7 @@ $(document).ready(function () {
 
 	/* to display courses container */
 	$('.back-courses').click(function () {
+		sessionStorage.setItem('currentPage', 'courses-container');
 		$('#courses-container').show().siblings().hide();
 	});
 
@@ -115,49 +122,12 @@ $(document).ready(function () {
 
 	/* to view list of courses */
 	$(document).on('click', '.view-courses', function () {
-		var courseCategory = $(this).data('course-category');
-		/* call to get files list api */
-		$.ajax({
-			type: "GET",
-			url: "/getFiles/" + courseCategory,
-			dataType: 'json',
-			cache: false,
-			timeout: 60000,
-			success: function (data) {
-				var pdfListHtml = '';
-				if (data.length > 0) {
-					for (var i = 0; i < data.length; i++) {
-						if (i === 0) {
-							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
-						} else {
-							pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
-						}
-					}
-				} else {
-					pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
-				}
-
-				$('#course-title').text(courseCategory);
-				$('#pdf-list li:not(:first-child)').remove()
-				$('#pdf-list li:last').after(pdfListHtml);
-				$('#pdf-container').show().siblings().hide();
-				$('#pdf-render-container').hide();
-
-				console.log("Courses:" + JSON.stringify(data));
-			},
-			error: function (textStatus, errorThrown) {
-				var toastHTML = '<span>Something went wrong.</span>';
-				M.toast({
-					html: toastHTML,
-					classes: 'red lighten-1'
-				});
-				console.error(JSON.stringify(errorThrown));
-			}
-		});
+		getCourses($(this).data('course-category'));
 	});
 
 	/* to show pdf */
 	$(document).on('click', '.view-pdf', function () {
+		sessionStorage.removeItem('currentPage');
 		var clicker = $(this);
 		var fileId = clicker.data('file-id');
 		var previewFileConfig = '';
@@ -307,6 +277,7 @@ function loginUser() {
 			}
 
 			$('#courses-container').show();
+			sessionStorage.setItem('currentPage', 'courses-container');
 			var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
 				html: toastHTML,
@@ -469,6 +440,7 @@ function uploadPDF() {
 		success: function (data) {
 			$('#upload-form').trigger("reset");
 			$('#courses-container').show().siblings().hide();
+			sessionStorage.setItem('currentPage', 'courses-container');
 			var toastHTML = '<span>' + data.success + '</span>';
 			M.toast({
 				html: toastHTML,
@@ -696,6 +668,49 @@ function setPdfMetaDataInSession(previewFilePromise) {
 				.then(result => sessionStorage.setItem("totalPages", result.numPages))
 				.catch(error => console.log(error));
 		});
+	});
+}
+
+function getCourses(courseCategory) {
+	sessionStorage.removeItem('currentPage');		
+	sessionStorage.setItem('courseCategory', courseCategory);
+	/* call to get files list api */
+	$.ajax({
+		type: "GET",
+		url: "/getFiles/" + courseCategory,
+		dataType: 'json',
+		cache: false,
+		timeout: 60000,
+		success: function (data) {
+			var pdfListHtml = '';
+			if (data.length > 0) {
+				for (var i = 0; i < data.length; i++) {
+					if (i === 0) {
+						pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
+					} else {
+						pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="view-pdf teal-text" data-file-id="' + data[i].id + '">' + data[i].fileLinkName + '</a></li>';
+					}
+				}
+			} else {
+				pdfListHtml = pdfListHtml + '<li class="collection-item"><a href="#" class="teal-text">No files available.</a></li>';
+			}
+
+			$('#course-title').text(courseCategory);
+			$('#pdf-list li:not(:first-child)').remove()
+			$('#pdf-list li:last').after(pdfListHtml);
+			$('#pdf-container').show().siblings().hide();
+			$('#pdf-render-container').hide();
+
+			console.log("Courses:" + JSON.stringify(data));
+		},
+		error: function (textStatus, errorThrown) {
+			var toastHTML = '<span>Something went wrong.</span>';
+			M.toast({
+				html: toastHTML,
+				classes: 'red lighten-1'
+			});
+			console.error(JSON.stringify(errorThrown));
+		}
 	});
 }
 
