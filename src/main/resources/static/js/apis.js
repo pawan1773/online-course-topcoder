@@ -53,6 +53,24 @@ function loadAnnotations(previewFilePromise, fileId) {
 	previewFilePromise.then(function (adobeViewer) {
 		adobeViewer.getAnnotationManager().then(function (annotationManager) {
 			getAnnotations(annotationManager, fileId);
+			annotationManager.getAnnotations()
+            .then(function (result) {
+                console.log("GET all annotations", result)
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+			    const customFlags = {
+	                downloadWithAnnotations: true,
+	                printWithAnnotations: true,
+	            };
+	            annotationManager.setConfig(customFlags)
+	                .then(function () {
+	                    console.log("custom flags applied")
+	                })
+	                .catch(function (error) {
+	                    console.log(error)
+	                });
 		});
 	});
 }
