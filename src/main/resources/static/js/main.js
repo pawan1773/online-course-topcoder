@@ -417,8 +417,8 @@ function setPreviewFile(divId, viewerConfig, previewFileConfig) {
 	
 			/* to handle events on PDF */
 			handleEventsOnPDF(adobeDCView, previewFilePromise, previewFileConfig.id);
+			loadAnnotations(previewFilePromise, previewFileConfig.id);
 			
-			loadAnnotations(previewFilePromise, previewFileConfig.id);			
 		};
 		reader.readAsArrayBuffer(blob);
 }
