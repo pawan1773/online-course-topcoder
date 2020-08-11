@@ -54,12 +54,12 @@ server.port=<your port number>
 * Navigate to ``src\main\resources\template``
 * Edit ``index.html``. Go to bottom of the file. Inside first script tag, set your tracking id in  ``https://www.googletagmanager.com/gtag/js?id=<YOUR_TRACKING_ID>`` 
 * Application is ready to deploy on any hosting services like Heroku. See [reference](https://www.adobe.io/apis/documentcloud/dcsdk/gettingstarted.html?ref=getStartedWithServicesSDK#)
-* To run locally, you can directly run application from your IDE or using command prompt, navigate to the main project folder where pom.xml is present and execute command ``mvn clean install`` followed by ``mvn spring-boot:run``
+* To run locally, you can directly run application from your IDE or using command prompt, navigate to the main project folder where ``pom.xml`` is present and execute command ``mvn clean install`` followed by ``mvn spring-boot:run``
 * Inside ``src\main\resources``, there two files ``data.sql`` and ``schema.sql``  which consists of database scripts to create tables (drop-create) and insert required data for application to work. These are automatically execute on application startup.
 
 ### Notes
-* As per official documents, PDF Embed API annotations are supported on Full Window embeded mode.
-* Sized container view is also provide if user doesn't want to deal with comments at that moment.
+* As per official documents, PDF Embed API annotations are supported on Full Window embeded mode. See [here](https://www.adobe.io/apis/documentcloud/dcsdk/docs.html)
+* Sized container view is also provided in application if user doesn't want to deal with comments at that moment.
 
 
 

@@ -60,17 +60,17 @@ function loadAnnotations(previewFilePromise, fileId) {
             .catch(function (error) {
                 console.log(error)
             });
-			    const customFlags = {
-	                downloadWithAnnotations: true,
-	                printWithAnnotations: true,
-	            };
-	            annotationManager.setConfig(customFlags)
-	                .then(function () {
-	                    console.log("custom flags applied")
-	                })
-	                .catch(function (error) {
-	                    console.log(error)
-	                });
+		    const customFlags = {
+                downloadWithAnnotations: true,
+                printWithAnnotations: true,
+            };
+            annotationManager.setConfig(customFlags)
+                .then(function () {
+                    console.log("custom flags applied")
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
 		});
 	});
 }
