@@ -164,6 +164,10 @@ $(document).ready(function () {
 				}
 
 				$('#pdf-render-container').show();
+				var userInfo = getUserInfoFromSessionStorage();
+				if(isStudent(userInfo)) {
+					$('#student-note').show();					
+				}
 				/* setup viewer configurations */
 				const viewerConfig = {
 					"defaultViewMode": "FIT_WIDTH",

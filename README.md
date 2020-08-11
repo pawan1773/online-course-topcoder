@@ -1,32 +1,69 @@
-## Adobe COVID Challenge Series - Week 5/8 - Get started with Embed API and Tools API.
+## Adobe COVID Challenge Series - Use Case 2: Collaboration Among Teachers and Students for Online Courses v1.0.
 
-## Useful links
+### Useful links
 
-* Youtube link for demo video: https://www.youtube.com/watch?v=seuK0bWH4Xs&feature=youtu.be
+* Youtube demo video link: https://youtu.be/pe9v6J81j0Q
+* Running application link: http://online-course-topcoder.herokuapp.com/
+* Git repository link: https://github.com/pawan1773/online-course-topcoder
+* Google analytics template link: https://analytics.google.com/analytics/web/template?uid=0gfK289bSoC5Obw8UQA2hA
 
-## Execute
+### Technologies used
+* Springboot 2.3.2.RELEASE
+* Java 8
+* Materialize css
+* JavaScript
+* HTML 5
+* CSS
+* Postgresql database
 
-* The CLI tool takes two arguments. First as path to html zip and second as output pdf path and display errors on console in case of any error. You can also replace dc-services-sdk-credentials private key if usage exceeded. Below is the syntax:
+### Pages
+* Login
+* Registration
+* Change Password
+* View Course
+* Upload PDFs
+* View PDF list
 
+### Prerequisites
+
+* Get your client id to use PDF Embed API and ``private.key`` and ``pdftools-api-credentials`` to use PDF Tools API from [here](https://www.adobe.io/apis/documentcloud/dcsdk/gettingstarted.html?ref=getStartedWithServicesSDK#)
+* To run locally, make sure Java 8 or higher, Maven, Postgresql is installed
+* Database user must have write access
+
+
+### How to set up
+
+* Import submitted code as maven project into IDE or clone it from shared git repository link
+* Navigate to ``src\main\resources``
+* Replace existing ``private.key`` and ``pdftools-api-credentials`` with yours.
+* Edit database related properties in ``applications.properties``
 
 ```$xslt
-mvn -f pom.xml exec:java -Dexec.mainClass=com.topcoder.challenge.StaticHTMLToPDF -Dexec.args="html_zip_path pdf_output_path"
+spring.datasource.url=jdbc:postgresql://<hostname>:<port>/<database_name>
+spring.datasource.username=<username>
+spring.datasource.password=<password>
 ```
-* Sample command (if zip is present within the pdf_creator directory)
+* Application by default runs on port 8080. In case, port 8080 is not available on your local system, uncomment and edit below property ``applications.properties``
 
 ```$xslt
-mvn -f pom.xml exec:java -Dexec.mainClass=com.topcoder.challenge.StaticHTMLToPDF -Dexec.args="static_html.zip pdfFromHTML.pdf"
+server.port=<your port number>
 ```
+* Navigate to ``src\main\resources\static\js``
+* Edit ``config.js`` and replace existing client id with newly generated client id.
+* Edit ``analytics.js`` and replace tracking id in ``gtag('config', '<your_tracking_id>')``
+* Navigate to ``src\main\resources\template``
+* Edit ``index.html``. Go to bottom of the file. Inside first script tag, set your tracking id in  ``https://www.googletagmanager.com/gtag/js?id=<YOUR_TRACKING_ID>`` 
+* Application is ready to deploy on any hosting services like Heroku. See [reference](https://www.adobe.io/apis/documentcloud/dcsdk/gettingstarted.html?ref=getStartedWithServicesSDK#)
+* To run locally, you can directly run application from your IDE or using command prompt, navigate to the main project folder where pom.xml is present and execute command ``mvn clean install`` followed by ``mvn spring-boot:run``
+* Inside ``src\main\resources``, there two files ``data.sql`` and ``schema.sql``  which consists of database scripts to create tables (drop-create) and insert required data for application to work. These are automatically execute on application startup.
 
-* Sample command (if zip is not within the pdf_creator directory, you need to either pass full absolute path or relative path)
+### Notes
+* As per official documents, PDF Embed API annotations are supported on Full Window embeded mode.
+* Sized container view is also provide if user doesn't want to deal with comments at that moment.
 
 
-```$xslt
-mvn -f pom.xml exec:java -Dexec.mainClass=com.topcoder.challenge.StaticHTMLToPDF -Dexec.args="../../folder_1/static_html.zip pdfFromHTML.pdf"
-```
 
----------------------------------------------------------------------------------------------------
 
-```$xslt
-mvn -f pom.xml exec:java -Dexec.mainClass=com.topcoder.challenge.StaticHTMLToPDF -Dexec.args="C:\Users\topcoder\Desktop\static_html.zip C:\Users\topcoder\Desktop\pdfFromHTML.pdf"
-```
+
+
+
