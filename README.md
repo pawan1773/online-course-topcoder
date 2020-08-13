@@ -64,7 +64,7 @@ server.port=<your port number>
 * File size to be uploaded is limited to 2MB.
 * Website design is mobile responsive but features are limited. Comments are not supported in mobile view.
 * Only teacher will be able to upload PDF.
-* When file is upload, whiteboard will be displayed below PDF.
+* When the PDF is opened, whiteboard will appear below PDF view.
 
 ### Events captured
 * LOGGED_IN_PERIOD: Time between login and logout.
